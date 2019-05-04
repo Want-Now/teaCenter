@@ -1,0 +1,119 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
+import Login from '@/components/login'
+import Index from '@/components/index'
+import IndexAll from '@/components/indexAll'
+import PersonCenter from '@/components/personalCenter'
+import Setting from '@/components/setting'
+import OperateLog from '@/components/operateLog'
+import AuthorityManage from '@/components/authorityManage/authorityManage'
+import PersonAuthority from '@/components/authorityManage/personAuthority'
+import RoleManage from '@/components/authorityManage/roleManage'
+
+import DataBaseIndex from '@/components/dataBaseManage/dataBaseIndex'
+import SNPManage from '@/components/dataBaseManage/snpManage'
+import TeaVarietyDatabase from '@/components/dataBaseManage/teaVarietyDatabase'
+import BeltRoadDatabase from '@/components/dataBaseManage/beltRoadDatabase'
+import ConsumerDatabase from '@/components/dataBaseManage/consumerDatabase'
+
+
+import UserManage from '@/components/userManage/userManage'
+import PersonManage from '@/components/userManage/PersonManage'
+
+
+import DictionaryIndex from '@/components/dictionaryManage/dictionaryIndex'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/Index',
+      name: 'Index',
+      component: Index
+    },
+    {
+      path: '/indexAll',
+      name: 'IndexAll',
+      component: IndexAll
+    },
+    {
+      path: '/PersonCenter',
+      name: 'PersonCenter',
+      component: PersonCenter
+    },
+    {
+      path: '/Setting',
+      name: 'Setting',
+      component: Setting
+    },
+    {
+      path: '/OperateLog',
+      name: 'OperateLog',
+      component: OperateLog
+    },
+    {
+      path: '/AuthorityManage',
+      name: 'AuthorityManage',
+      component: AuthorityManage
+    },
+    {
+      path: '/PersonAuthority',
+      name: 'PersonAuthority',
+      component: PersonAuthority
+    },
+    {
+      path: '/RoleManage',
+      name: 'RoleManage',
+      component: RoleManage
+    },
+    {
+      path:'/DataBaseIndex',
+      name:'DataBaseIndex',
+      component: DataBaseIndex
+    },
+    {
+      path:'/SNPManage',
+      name:'SNPManage',
+      component: SNPManage
+    },
+    {
+      path:'/TeaVarietyDatabase',
+      name:'TeaVarietyDatabase',
+      component: TeaVarietyDatabase
+    },
+    {
+      path:'/BeltRoadDatabase',
+      name:'BeltRoadDatabase',
+      component: BeltRoadDatabase
+    },
+    {
+      path:'/ConsumerDatabase',
+      name:'ConsumerDatabase',
+      component: ConsumerDatabase
+    },
+
+    {
+      path:'/UserManage',
+      name:'UserManage',
+      component: UserManage
+    },
+    {
+      path:'/PersonManage',
+      name:'PersonManage',
+      component: PersonManage
+    },
+
+    {
+      path:'/DictionaryIndex',
+      name:'DictionaryIndex',
+      component: DictionaryIndex
+    },
+  ]
+})
