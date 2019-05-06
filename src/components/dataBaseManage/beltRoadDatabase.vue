@@ -30,6 +30,17 @@
                 :data="tradeInfoData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
                 <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, tradeInfoData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   v-for="item in tradeInfoCol"
                   :key="item.name"
                   :prop="item.name"
@@ -44,6 +55,17 @@
                 :data="countryData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
                 <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, countryData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   v-for="item in countryCol"
                   :key="item.name"
                   :prop="item.name"
@@ -57,6 +79,17 @@
                 stripe
                 :data="productionData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, productionData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column
                   v-for="item in productionCol"
                   :key="item.name"
@@ -136,6 +169,64 @@
       handleClick(tab, event) {
         console.log(tab, event);
       },
+      deleteRow(index,rows,row){
+        this.$confirm('是否删除数据？', '确认信息', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '删除数据',
+          cancelButtonText: '放弃删除'
+        })
+          .then(() => {
+            switch (this.activeCard) {
+              case 'tradeInfo':{
+                this.$axios({
+                  url:'/database/tradeInfo/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'consume':{
+                this.$axios({
+                  url:'/database/countryInfo/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'teaProduce':{
+                this.$axios({
+                  url:'/database/production/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+            }
+          })
+          .catch(action => {
+            this.$message({
+              type: 'info',
+              message: action === 'cancel'
+                ? '放弃删除'
+                : '停留在当前页面'
+            })
+          });
+      },
       getTradeInfo(){
         this.$axios({
           url:'/database/tradeInfo',
@@ -149,7 +240,7 @@
           url:'/database/countryInfo',
           method:'get'
         }).then(response=>{
-          this.tradeInfoData=response.data;
+          this.countryData=response.data;
         }).catch(error=>console.log(error));
       },
       getProduction(){
@@ -159,7 +250,7 @@
         }).then(response=>{
           this.productionData=response.data;
         }).catch(error=>console.log(error));
-      }
+      },
     }
   }
 </script>
@@ -186,5 +277,10 @@
     text-align: center;
     margin: 0px;
     padding: 20px;
+  }
+  .el-icon-remove{
+    background-color: rgba(255,255,255,0);
+    border: none;
+    color: #ccadad;
   }
 </style>

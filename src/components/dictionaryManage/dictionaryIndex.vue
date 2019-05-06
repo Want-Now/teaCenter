@@ -49,7 +49,7 @@
               <template slot-scope="scope">
                 <el-button
                   class="btn-normal"
-                  @click="handleEdit(scope.$index)">查看字典</el-button>
+                  @click="handleEdit(scope.row)">查看字典</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -83,9 +83,25 @@
       }
     },
     methods:{
-      handleEdit(index) {
-        switch (index) {
-          case 0:{}
+      handleEdit(row) {
+        console.log(row.index);
+        switch (row.index) {
+          case '1':{
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:1}});
+            break;
+          }
+          case '2':{
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:2}});
+            break;
+          }
+          case '3':{
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:3}});
+            break;
+          }
+          case '4':{
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:4}});
+            break;
+          }
         }
       },
     }

@@ -29,6 +29,17 @@
                 :data="basicInfoData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
                 <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, basicInfoData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   v-for="item in basicInfoCol"
                   :key="item.name"
                   :prop="item.name"
@@ -41,6 +52,17 @@
                 stripe
                 :data="factorData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, factorData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column
                   v-for="item in factorCol"
                   :key="item.name"
@@ -56,6 +78,17 @@
                 :data="featureData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
                 <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, featureData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   v-for="item in featureCol"
                   :key="item.name"
                   :prop="item.name"
@@ -70,6 +103,17 @@
                 :data="habitsData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
                 <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, habitsData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   v-for="item in habitsCol"
                   :key="item.name"
                   :prop="item.name"
@@ -83,6 +127,17 @@
                 stripe
                 :data="recognitionData"
                 :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                <el-table-column
+                  width="80px"
+                  fixed="left">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, recognitionData,scope.row)"
+                      class="el-icon-remove"
+                      size="small">
+                    </el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column
                   v-for="item in recognitionCol"
                   :key="item.name"
@@ -221,6 +276,90 @@
           this.recognitionData=response.data;
         }).catch(error=>console.log(error));
       },
+      deleteRow(index,rows,row){
+        this.$confirm('是否删除数据？', '确认信息', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '删除数据',
+          cancelButtonText: '放弃删除'
+        })
+          .then(() => {
+            switch (this.activeCard) {
+              case 'basicInfo':{
+                this.$axios({
+                  url:'/database/basicInfo/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'factor':{
+                this.$axios({
+                  url:'/database/factor/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'feature':{
+                this.$axios({
+                  url:'/database/feature/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'habits':{
+                this.$axios({
+                  url:'/database/habits/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'recognition':{
+                this.$axios({
+                  url:'/database/recognition/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                }).catch(error=>console.log(error));
+                break;
+              }
+            }
+          })
+          .catch(action => {
+            this.$message({
+              type: 'info',
+              message: action === 'cancel'
+                ? '放弃删除'
+                : '停留在当前页面'
+            })
+          });
+      },
     }
   }
 </script>
@@ -248,5 +387,9 @@
     margin: 0px;
     padding: 20px;
   }
-
+  .el-icon-remove{
+    background-color: rgba(255,255,255,0);
+    border: none;
+    color: #ccadad;
+  }
 </style>

@@ -23,6 +23,7 @@ import PersonManage from '@/components/userManage/PersonManage'
 
 
 import DictionaryIndex from '@/components/dictionaryManage/dictionaryIndex'
+import DetailDictionary from '@/components/dictionaryManage/detailDictionary'
 
 Vue.use(Router)
 
@@ -114,6 +115,11 @@ export default new Router({
       path:'/DictionaryIndex',
       name:'DictionaryIndex',
       component: DictionaryIndex
+    },
+    {
+      path:'/DetailDictionary',
+      name:'DetailDictionary',
+      component: DetailDictionary
     },
   ]
 })

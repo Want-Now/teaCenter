@@ -26,8 +26,17 @@
             stripe
             :data="teaVariety"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+            <el-table-column fixed="left">
+              <template slot-scope="scope">
+                <el-button
+                  @click.native.prevent="deleteRow(scope.$index, teaVariety,scope.row)"
+                  class="el-icon-remove"
+                  size="small">
+                </el-button>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="index"
+              prop="id"
               label="编号"
               fixed>
             </el-table-column>
@@ -96,6 +105,35 @@
         this.teaVariety=response.data;
       })
         .catch(error=>console.log(error));
+    },
+    methods:{
+      deleteRow(index,rows,row){
+        this.$confirm('是否删除数据？', '确认信息', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '删除数据',
+          cancelButtonText: '放弃删除'
+        })
+          .then(() => {
+            this.$axios({
+              url:'/database/germplasmResources/'+row.id,
+              method: 'delete'
+            }).then(()=>{
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              });
+              rows.splice(index, 1);
+            }).catch(error=>console.log(error));
+          })
+          .catch(action => {
+            this.$message({
+              type: 'info',
+              message: action === 'cancel'
+                ? '放弃删除'
+                : '停留在当前页面'
+            })
+          });
+      },
     }
 
   }
@@ -131,5 +169,10 @@
   }
   .addBtnDiv{
     background-color: white;
+  }
+  .el-icon-remove{
+    background-color: rgba(255,255,255,0);
+    border: none;
+    color: #ccadad;
   }
 </style>

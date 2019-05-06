@@ -176,6 +176,7 @@
                   type:'success'
                 });
                 this.addDialogVisible=false;
+                this.getUserRole();
               }else{
                 this.$message.error('添加用户失败');
               }

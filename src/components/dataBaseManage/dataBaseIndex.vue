@@ -17,7 +17,6 @@
           </p>
           <el-table
             stripe
-            show-header="false"
             :data="dataBase"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
             @row-click="openDatabase">

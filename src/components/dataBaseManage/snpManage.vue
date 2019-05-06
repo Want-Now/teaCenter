@@ -27,16 +27,15 @@
             <el-button class="btn-normal btn-output" @click="" v-if="singleInput">导入</el-button>
           </p>
           <el-table
+            v-if="!singleInput"
             stripe
             :data="dataBase"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
-              fixed="left"
-              width="80"
-              v-if="!singleInput">
+              fixed="left">
               <template slot-scope="scope">
                 <el-button
-                  @click.native.prevent="deleteRow(scope.$index, dataBase)"
+                  @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
                   class="el-icon-remove"
                   size="small">
                 </el-button>
@@ -45,28 +44,15 @@
             <el-table-column
               prop="teaSpecies"
               label="茶树品种">
-              <template slot-scope="scope" v-if="singleInput">
-                <el-input type="text"></el-input>
-              </template>
             </el-table-column>
             <el-table-column
               v-for="{label} in colConfigs"
               :key="label"
               :prop="label"
               :label="label">
-              <template slot-scope="scope" v-if="singleInput">
-                <el-select v-model="selectValue" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </template>
             </el-table-column>
           </el-table>
-          <div class="addBtnDiv"  v-if="!singleInput">
+          <div class="addBtnDiv">
             <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
               <img src="../../assets/icon/add.png">
             </el-button>
@@ -82,7 +68,35 @@
               <!--:total="400">-->
             <!--</el-pagination>-->
           <!--</p>-->
-
+          <el-table
+            v-if="singleInput"
+            stripe
+            :data="addData"
+            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+            <el-table-column
+              prop="teaSpecies"
+              label="茶树品种">
+              <template slot-scope="scope">
+                <el-input type="text"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="{label} in colConfigs"
+              :key="label"
+              :prop="label"
+              :label="label">
+              <template slot-scope="scope">
+                <el-select v-model="selectValue" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
 
       </div>
@@ -128,7 +142,8 @@
         {label:'cs94'},{label:'cs114'},{label:'cs124'},{label:'cs146'},{label:'cs166'},{label:'cs20'},
         {label:'cs215'},{label:'cs28'},{label:'cs4'},{label:'cs49'},{label:'cs67'},{label:'cs81'},{label:'cs95'}]
       return{
-        dataBase:[{teaSpecies:'a',cs1:'1'}],
+        dataBase:[],
+      // {teaSpecies:'nihao',cs1:'a'}
         id:1,
         dialogVisible:false,
         singleInput:false,
@@ -137,7 +152,7 @@
       }
     },
     created(){
-      // this.getSnpMap();
+      this. getSnpMap();
     },
     methods:{
       getSnpMap(){
@@ -147,12 +162,37 @@
           url:'/database/snpMap',
         }).then(response=>{
           that.dataBase=response.data;
+
         }).catch(error=>{
           console.log(error);
         });
       },
-      deleteRow(index,rows){
-        rows.splice(index, 1);
+      deleteRow(index,rows,row){
+        this.$confirm('是否删除数据？', '确认信息', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '删除数据',
+          cancelButtonText: '放弃删除'
+        })
+          .then(() => {
+            this.$axios({
+              url:'/database/snpMap/'+row.id,
+              method: 'delete'
+            }).then(()=>{
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              });
+              rows.splice(index, 1);
+            }).catch(error=>console.log(error));
+          })
+          .catch(action => {
+            this.$message({
+              type: 'info',
+              message: action === 'cancel'
+                ? '放弃删除'
+                : '停留在当前页面'
+            })
+          });
       },
       openSingleImport(){
         this.dialogVisible = false;

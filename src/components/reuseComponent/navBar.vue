@@ -73,7 +73,6 @@
         console.log(this.isActive);
       },
       toPersonCenter(){
-        let that=this;
         this.$router.push({path:'/PersonCenter',query:{userid:this.id}});
       },
       toSetting(){
@@ -84,8 +83,8 @@
 </script>
 
 <style scoped>
-  .left-nav{width: 220px;height: 100%;}
-  .navBar{width: 100%;height: 100%;background-color: #d3d4e4;}
+  .left-nav{width: 220px;height: 100%;background-color: #d3d4e4;}
+  .navBar{width: 100%;height: 100%;}
   .userIcon{
     margin-right: 10px;
   }
