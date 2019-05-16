@@ -20,7 +20,7 @@
             <el-button class="btn-normal btn-search">筛选</el-button>
             <el-button class="btn-normal btn-output">导出</el-button>
             <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
           </p>
           <el-table
             stripe
@@ -64,11 +64,17 @@
               <!--:total="400">-->
             <!--</el-pagination>-->
           </p>
-
         </div>
-
       </div>
-
+      <el-dialog
+        title="新增"
+        :visible.sync="dialogVisible"
+        width="400px"
+        class="centerDialog"
+        center>
+        <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
+        <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
+      </el-dialog>
     </el-main>
     <!--</el-container>-->
 
@@ -95,6 +101,7 @@
         {label:'taste',name:'滋味'},{label:'note',name:'备注'}]
       return{
         teaVariety:[],
+        dialogVisible:false,
       }
     },
     created() {
@@ -133,6 +140,9 @@
                 : '停留在当前页面'
             })
           });
+      },
+      openMultiImport(){
+        this.$router.push({path:'/MultiImport',query:{databaseName:'variety'}});
       },
     }
 

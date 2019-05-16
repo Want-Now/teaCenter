@@ -75,5 +75,7 @@
     border-color: #8084b1;
     color: white;
   }
-
+  .centerDialog .el-button{
+    margin-left: 40px;
+  }
 </style>

@@ -11,7 +11,7 @@
             <span class="buttonArea">
               <img class="imgSize" src="../../assets/icon/settings.png" @click="toSetting">
               <img class="imgSize" src="../../assets/icon/fen.png">
-              <img class="imgSize" src="../../assets/icon/out.png">
+              <img class="imgSize" src="../../assets/icon/out.png" @click="logOut">
             </span>
           </div>
         </div>
@@ -77,14 +77,26 @@
       },
       toSetting(){
         this.$router.push('/Setting');
+      },
+      logOut(){
+        this.$axios({
+          url:'/logout',
+          method:'get'
+        }).then(response=>{
+          if(response.status===200){
+            this.$router.push('/');
+          }else{
+            console.log(response);
+          }
+        }).catch(error=>console.log(error));
       }
     }
   }
 </script>
 
 <style scoped>
-  .left-nav{width: 220px;height: 100%;background-color: #d3d4e4;}
-  .navBar{width: 100%;height: 100%;}
+  .left-nav{width: 220px;height: 100%;}
+  .navBar{width: 100%;height: 100%;background-color: #d3d4e4;}
   .userIcon{
     margin-right: 10px;
   }

@@ -18,9 +18,6 @@
             <img src="../../assets/icon/search.png">
             <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
             <el-button class="btn-normal">筛选</el-button>
-            <el-button class="addBtn">
-              <img src="../../assets/icon/add.png">
-            </el-button>
           </p>
           <el-table
             stripe
@@ -31,7 +28,7 @@
               fixed="left">
               <template slot-scope="scope">
                 <el-button
-                  @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
+                  @click.native.prevent="deleteRow(scope.$index, dictionaryInfo,scope.row)"
                   class="el-icon-remove"
                   size="small">
                 </el-button>
@@ -112,7 +109,7 @@
       },
       methods:{
         handleEdit(row){
-
+          this.$router.push({path:'/EditDictionary',query:{databaseName:this.databaseName,dictionaryName:row.dictionaryName}});
         },
         getDictionartInfo(){
           switch(this.$route.query.dbIndex){
@@ -164,6 +161,33 @@
         },
         handleCurrentChange(val) {
           this.currentPage=val;
+        },
+        deleteRow(index, rows,row){
+          this.$confirm('是否删除数据？', '确认信息', {
+            distinguishCancelAndClose: true,
+            confirmButtonText: '删除数据',
+            cancelButtonText: '放弃删除'
+          })
+            .then(() => {
+              this.$axios({
+                url:'/database/snpMap/'+row.id,
+                method: 'delete'
+              }).then(()=>{
+                this.$message({
+                  type: 'success',
+                  message: '删除成功'
+                });
+                rows.splice(index, 1);
+              }).catch(error=>console.log(error));
+            })
+            .catch(action => {
+              this.$message({
+                type: 'info',
+                message: action === 'cancel'
+                  ? '放弃删除'
+                  : '停留在当前页面'
+              })
+            });
         }
       }
     }

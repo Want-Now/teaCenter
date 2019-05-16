@@ -34,6 +34,9 @@
               prop="description"
               label="角色"
               sortable>
+              <template slot-scope="scope">
+                <a class="aLabel" @click="goRoleManage(scope.row)">{{scope.row.description}}</a>
+              </template>
             </el-table-column>
             <el-table-column
               prop="level"
@@ -44,7 +47,6 @@
               label="操作">
               <template slot-scope="scope">
                 <el-button class="btn-normal" @click="handleEdit(scope.row)">编辑</el-button>
-
               </template>
             </el-table-column>
           </el-table>
@@ -98,6 +100,9 @@
       },
       handleEdit(row){
         this.$router.push({path:'/PersonAuthority',query:{username:row.username,role:row.description}});
+      },
+      goRoleManage(row){
+        this.$router.push({path:'/RoleManage',query:{roleDiscription:row.description}});
       }
     }
   }
@@ -129,6 +134,10 @@
     text-align: center;
     margin: 0px;
     padding: 20px;
+  }
+  .aLabel{
+    text-decoration: underline;
+    color: #494e8f;
   }
 </style>
 

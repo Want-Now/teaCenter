@@ -16,7 +16,7 @@ import SNPManage from '@/components/dataBaseManage/snpManage'
 import TeaVarietyDatabase from '@/components/dataBaseManage/teaVarietyDatabase'
 import BeltRoadDatabase from '@/components/dataBaseManage/beltRoadDatabase'
 import ConsumerDatabase from '@/components/dataBaseManage/consumerDatabase'
-
+import MultiImport from '@/components/dataBaseManage/MultiImport'
 
 import UserManage from '@/components/userManage/userManage'
 import PersonManage from '@/components/userManage/PersonManage'
@@ -24,6 +24,7 @@ import PersonManage from '@/components/userManage/PersonManage'
 
 import DictionaryIndex from '@/components/dictionaryManage/dictionaryIndex'
 import DetailDictionary from '@/components/dictionaryManage/detailDictionary'
+import EditDictionary from '@/components/dictionaryManage/editDictionary'
 
 Vue.use(Router)
 
@@ -99,6 +100,11 @@ export default new Router({
       name:'ConsumerDatabase',
       component: ConsumerDatabase
     },
+    {
+      path:'/MultiImport',
+      name:'MultiImport',
+      component: MultiImport
+    },
 
     {
       path:'/UserManage',
@@ -120,6 +126,11 @@ export default new Router({
       path:'/DetailDictionary',
       name:'DetailDictionary',
       component: DetailDictionary
+    },
+    {
+      path:'/EditDictionary',
+      name:'EditDictionary',
+      component: EditDictionary
     },
   ]
 })

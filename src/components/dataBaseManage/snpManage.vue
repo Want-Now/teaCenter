@@ -18,20 +18,22 @@
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal btn-search" v-if="!singleInput">筛选</el-button>
-            <el-button class="btn-normal btn-output" v-if="!singleInput">导出</el-button>
-            <el-button class="btn-normal btn-output" v-if="!singleInput">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!singleInput">新增</el-button>
-            <el-button class="btn-normal btn-output" @click="singleInput=false" v-if="singleInput">返回</el-button>
+            <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
+            <el-button class="btn-normal btn-search" v-if="!singleInput&&!infoEdit" @click="searchInfo()">筛选</el-button>
+            <el-button class="btn-normal btn-output" v-if="!singleInput&&!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" v-if="!singleInput&&!infoEdit" @click="editTable()">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!singleInput&&!infoEdit">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="backOrigin" v-if="singleInput||infoEdit">返回</el-button>
+            <el-button class="btn-normal btn-output" v-if="infoEdit" @click="uploadEdit()">完成</el-button>
             <el-button class="btn-normal btn-output" @click="" v-if="singleInput">导入</el-button>
           </p>
           <el-table
-            v-if="!singleInput"
+            v-show="!singleInput"
             stripe
-            :data="dataBase"
+            :data="databaseDisplay"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
+              v-show="!infoEdit"
               fixed="left">
               <template slot-scope="scope">
                 <el-button
@@ -43,7 +45,9 @@
             </el-table-column>
             <el-table-column
               prop="teaSpecies"
-              label="茶树品种">
+              label="茶树品种"
+              width="120px"
+              center>
             </el-table-column>
             <el-table-column
               v-for="{label} in colConfigs"
@@ -52,7 +56,7 @@
               :label="label">
             </el-table-column>
           </el-table>
-          <div class="addBtnDiv">
+          <div class="addBtnDiv" v-if="!singleInput&&!infoEdit">
             <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
               <img src="../../assets/icon/add.png">
             </el-button>
@@ -68,35 +72,69 @@
               <!--:total="400">-->
             <!--</el-pagination>-->
           <!--</p>-->
-          <el-table
-            v-if="singleInput"
-            stripe
-            :data="addData"
-            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
-            <el-table-column
-              prop="teaSpecies"
-              label="茶树品种">
-              <template slot-scope="scope">
-                <el-input type="text"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column
-              v-for="{label} in colConfigs"
-              :key="label"
-              :prop="label"
-              :label="label">
-              <template slot-scope="scope">
-                <el-select v-model="selectValue" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </el-table>
+          <!--<el-table-->
+            <!--v-show="singleInput"-->
+            <!--stripe-->
+            <!--:data="addSingleData"-->
+            <!--:header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">-->
+            <!--<el-table-column-->
+              <!--center-->
+              <!--prop="teaSpecies"-->
+              <!--label="茶树品种"-->
+              <!--width="100px">-->
+              <!--<template slot-scope="scope">-->
+                <!--<el-input type="text"></el-input>-->
+              <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column-->
+              <!--v-for="{label} in colConfigs"-->
+              <!--:key="label"-->
+              <!--:prop="label"-->
+              <!--:label="label">-->
+              <!--<template slot-scope="scope">-->
+                <!--<el-select v-model="selectValue" placeholder="请选择">-->
+                  <!--<el-option-->
+                    <!--v-for="item in options"-->
+                    <!--:key="item.value"-->
+                    <!--:label="item.label"-->
+                    <!--:value="item.value">-->
+                  <!--</el-option>-->
+                <!--</el-select>-->
+              <!--</template>-->
+            <!--</el-table-column>-->
+          <!--</el-table>-->
+
+          <!--<el-table-->
+            <!--v-show="infoEdit"-->
+            <!--stripe-->
+            <!--:data="editData"-->
+            <!--:header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">-->
+            <!--<el-table-column-->
+              <!--center-->
+              <!--prop="teaSpecies"-->
+              <!--label="茶树品种"-->
+              <!--width="100px">-->
+              <!--<template slot-scope="scope">-->
+                <!--<el-input type="text" :placeholder="scope.row.teaSpecies"></el-input>-->
+              <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column-->
+              <!--v-for="{label} in colConfigs"-->
+              <!--:key="label"-->
+              <!--:prop="label"-->
+              <!--:label="label">-->
+              <!--<template slot-scope="scope">-->
+                <!--<el-select v-model="selectValue" placeholder="">-->
+                  <!--<el-option-->
+                    <!--v-for="item in options"-->
+                    <!--:key="item.value"-->
+                    <!--:label="item.label"-->
+                    <!--:value="item.value">-->
+                  <!--</el-option>-->
+                <!--</el-select>-->
+              <!--</template>-->
+            <!--</el-table-column>-->
+          <!--</el-table>-->
         </div>
 
       </div>
@@ -108,7 +146,7 @@
         class="centerDialog"
         center>
         <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
-        <el-button class="btn-normal" @click="dialogVisible = false">批量导入</el-button>
+        <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
       </el-dialog>
     </el-main>
     <!--</el-container>-->
@@ -143,16 +181,24 @@
         {label:'cs215'},{label:'cs28'},{label:'cs4'},{label:'cs49'},{label:'cs67'},{label:'cs81'},{label:'cs95'}]
       return{
         dataBase:[],
+        databaseDisplay:[],
       // {teaSpecies:'nihao',cs1:'a'}
         id:1,
         dialogVisible:false,
         singleInput:false,
         selectValue:'',
-        options:[{}]
+        options:[{}],
+        addSingleData:[{}],
+        editData:[],
+        infoEdit:false,
+        search:''
       }
     },
     created(){
       this. getSnpMap();
+    },
+    computed:{
+
     },
     methods:{
       getSnpMap(){
@@ -162,6 +208,7 @@
           url:'/database/snpMap',
         }).then(response=>{
           that.dataBase=response.data;
+          that.databaseDisplay=response.data;
 
         }).catch(error=>{
           console.log(error);
@@ -197,6 +244,22 @@
       openSingleImport(){
         this.dialogVisible = false;
         this.singleInput=true;
+      },
+      openMultiImport(){
+        this.$router.push({path:'/MultiImport',query:{databaseName:'snp'}});
+      },
+      backOrigin(){
+        this.singleInput=false;
+        this.infoEdit=false;
+      },
+      editTable(){
+        this.infoEdit=!this.infoEdit;
+      },
+      searchInfo(){
+          var search=this.search;
+          if(search){
+            this.databaseDisplay=this.dataBase.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+          }
       }
     }
 
@@ -239,9 +302,6 @@
     background-color: rgba(255,255,255,0);
     border: none;
     color: #ccadad;
-  }
-  .centerDialog .el-button{
-    margin-left: 40px;
   }
 </style>
 

@@ -20,7 +20,7 @@
             <el-button class="btn-normal btn-search">筛选</el-button>
             <el-button class="btn-normal btn-output">导出</el-button>
             <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
           </p>
           <el-tabs v-model="activeCard" @tab-click="handleClick">
             <el-tab-pane label="95后现制奶茶消费数据库-基本信息" name="basicInfo">
@@ -147,6 +147,11 @@
               </el-table>
             </el-tab-pane>
           </el-tabs>
+          <div class="addBtnDiv">
+            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
+              <img src="../../assets/icon/add.png">
+            </el-button>
+          </div>
           <p class="pagination">
             <!--<el-pagination-->
             <!--@size-change="handleSizeChange"-->
@@ -158,11 +163,17 @@
             <!--:total="400">-->
             <!--</el-pagination>-->
           </p>
-
         </div>
-
       </div>
-
+      <el-dialog
+        title="新增"
+        :visible.sync="dialogVisible"
+        width="400px"
+        class="centerDialog"
+        center>
+        <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
+        <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
+      </el-dialog>
     </el-main>
     <!--</el-container>-->
 
@@ -220,7 +231,8 @@
         factorData:[],
         featureData:[],
         habitsData:[],
-        recognitionData:[]
+        recognitionData:[],
+        dialogVisible:false,
 
 
       }
@@ -360,6 +372,30 @@
             })
           });
       },
+      openMultiImport(){
+        switch (this.activeCard) {
+          case 'basicInfo':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'basicInfo'}});
+            break;
+          }
+          case 'factor':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'factor'}});
+            break;
+          }
+          case 'feature':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'feature'}});
+            break;
+          }
+          case 'habits':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'habits'}});
+            break;
+          }
+          case 'recognition':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'recognition'}});
+            break;
+          }
+        }
+      },
     }
   }
 </script>
@@ -391,5 +427,13 @@
     background-color: rgba(255,255,255,0);
     border: none;
     color: #ccadad;
+  }
+  .addBtn{
+    border: none;
+    height: 80px;
+    background-color: white;
+  }
+  .addBtnDiv{
+    background-color: white;
   }
 </style>

@@ -20,7 +20,7 @@
             <el-button class="btn-normal btn-search">筛选</el-button>
             <el-button class="btn-normal btn-output">导出</el-button>
             <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
           </p>
           <el-tabs v-model="activeCard" @tab-click="handleClick">
             <el-tab-pane label="贸易信息" name="tradeInfo">
@@ -97,8 +97,14 @@
                   :label="item.label">
                 </el-table-column>
               </el-table>
+
             </el-tab-pane>
           </el-tabs>
+          <div class="addBtnDiv">
+            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
+              <img src="../../assets/icon/add.png">
+            </el-button>
+          </div>
           <p class="pagination">
             <!--<el-pagination-->
             <!--@size-change="handleSizeChange"-->
@@ -110,7 +116,15 @@
             <!--:total="400">-->
             <!--</el-pagination>-->
           </p>
-
+          <el-dialog
+            title="新增"
+            :visible.sync="dialogVisible"
+            width="400px"
+            class="centerDialog"
+            center>
+            <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
+            <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
+          </el-dialog>
         </div>
 
       </div>
@@ -156,7 +170,9 @@
         activeCard:'tradeInfo',
         tradeInfoData:[],
         productionData:[],
-        countryData:[]
+        countryData:[],
+        dialogVisible:false,
+
 
       }
     },
@@ -251,6 +267,22 @@
           this.productionData=response.data;
         }).catch(error=>console.log(error));
       },
+      openMultiImport(){
+        switch (this.activeCard) {
+          case 'tradeInfo':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'trade'}});
+            break;
+          }
+          case 'consume':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'consume'}});
+            break;
+          }
+          case 'teaProduce':{
+            this.$router.push({path:'/MultiImport',query:{databaseName:'produce'}});
+            break;
+          }
+        }
+      },
     }
   }
 </script>
@@ -282,5 +314,13 @@
     background-color: rgba(255,255,255,0);
     border: none;
     color: #ccadad;
+  }
+  .addBtn{
+    border: none;
+    height: 80px;
+    background-color: white;
+  }
+  .addBtnDiv{
+    background-color: white;
   }
 </style>

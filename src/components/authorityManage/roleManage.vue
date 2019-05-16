@@ -10,7 +10,7 @@
           <img src="../../assets/icon/unfold.png" style="height: 16px">
           <span class="locat-first">权限管理</span>
           <img src="../../assets/icon/unfold.png" style="height: 12px">
-          <span class="locat-second">{{user}}</span>
+          <span class="locat-second">{{roleName}}</span>
         </p>
 
         <div class="mainDiv">
@@ -112,10 +112,12 @@
         dialogVisible:false,
         searchedName:'',
         ifAdd:false,
+        roleName:'',
 
       }
     },
     created() {
+      this.roleName=this.$route.query.roleDiscription;
       for (let key in this.subDataBases) {
         this.$set(this.powerChose, key, [])
       }
