@@ -107,7 +107,7 @@
           method:'get',
           url:'/settings',
           params:{
-            id:3
+            id:this.$route.query.userId
           }
         }).then(response=>{
           that.userName=response.data.username;
@@ -115,14 +115,13 @@
         }).catch(error=>console.log(error));
       },
       changePassword(){
-        let that=this;
         this.$axios({
           method:'put',
           url:'/settings/password',
           params:{
-            id:3,
-            oldPassword:that.oldPassword,
-            newPassword:that.newPassword
+            id:this.$route.query.userId,
+            oldPassword:this.oldPassword,
+            newPassword:this.newPassword
           }
         }).then(response=>{
           if(response.status==200){

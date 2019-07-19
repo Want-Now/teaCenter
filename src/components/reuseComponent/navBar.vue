@@ -7,7 +7,7 @@
              <img class="userImg" src="../../assets/timg.jpeg" @click="toPersonCenter">
            </span>
           <div class="userInfoRight">
-            <p>{{username}}</p>
+            <p style="text-align: center">{{username}}</p>
             <span class="buttonArea">
               <img class="imgSize" src="../../assets/icon/settings.png" @click="toSetting">
               <img class="imgSize" src="../../assets/icon/fen.png">
@@ -34,10 +34,11 @@
 <script>
   export default {
     name: "nav-bar",
+    // props:['username','userid'],
     data(){
       return{
         show:true,
-        isActive:'index',
+        isActive:'',
         navName:[
           {title:'首页',name:'index'},
           {title:'数据库管理',name:'databaseManage'},
@@ -46,8 +47,12 @@
           {title:'字典管理',name:'dictionaryManage'},
           {title:'操作日志',name:'operateLog'},
         ],
-        id:'',
+        username:'',
+        userId:'',
       }
+    },
+    created(){
+      this.getUserID();
     },
     mounted () {
       this.isActive = sessionStorage.getItem('isActive');
@@ -57,14 +62,13 @@
         this.id = newVal;
       }
     },
-    props:['username','userid'],
     methods:{
       navChange(title){
         switch(title){
           case 'index':{this.$router.push('/Index');break;}
           case 'databaseManage':{this.$router.push('/DataBaseIndex');break;}
           case 'authorityManage':{this.$router.push('/AuthorityManage');break;}
-          case 'userManage':{this.$router.push('/UserManage');break;}
+          case 'userManage':{this.$router.push({path:'/UserManage',query:{userId:this.userId}});break;}
           case 'dictionaryManage':{this.$router.push('/DictionaryIndex');break;}
           case 'operateLog':{this.$router.push('/OperateLog');break;}
         }
@@ -73,10 +77,10 @@
         console.log(this.isActive);
       },
       toPersonCenter(){
-        this.$router.push({path:'/PersonCenter',query:{userid:this.id}});
+        this.$router.push({path:'/PersonCenter',query:{userId:this.userId}});
       },
       toSetting(){
-        this.$router.push('/Setting');
+        this.$router.push({path:'/Setting',query:{userId:this.userId}});
       },
       logOut(){
         this.$axios({
@@ -89,7 +93,16 @@
             console.log(response);
           }
         }).catch(error=>console.log(error));
-      }
+      },
+      getUserID(){
+        this.$axios({
+          method:'get',
+          url:'/myinformation',
+        }).then(response=>{
+          this.userId=response.data.id;
+          this.username=response.data.username;
+        }).catch(error=>{console.log(error);});
+      },
     }
   }
 </script>

@@ -4,7 +4,7 @@
       <top-bar></top-bar>
     </el-header>
     <el-main>
-      <nav-bar class="left"></nav-bar>
+      <nav-bar class="left" :username="username"></nav-bar>
       <div class="right">
         <p class="location">
           <img src="../../assets/icon/unfold.png" style="height: 16px">
@@ -79,8 +79,13 @@
           {index:'3',name:'一带一路贸易数据库',changeDate:'2018.08.01 23:55:41',uploader:'杨超英',size:''},
           {index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2018.08.01 23:55:41',uploader:'林畅',size:''}
         ],
+        username:'',
+
 
       }
+    },
+    created(){
+      this.username=this.$route.query.username;
     },
     methods:{
       handleEdit(row) {

@@ -33,7 +33,8 @@
           </div>
           <p class="btnP">
             <el-button class="btn-normal" @click="logoutUser">注销</el-button>
-            <el-button class="btn-normal" @click="freezeUser">冻结</el-button>
+            <el-button class="btn-normal" @click="freezeUser" v-if="!isFrozen">冻结</el-button>
+            <el-button class="btn-normal" @click="freezeUser" v-else>解冻</el-button>
             <el-button class="btn-normal" @click="resetUser">重置</el-button>
             <el-button class="btn-normal" @click="back()">返回</el-button>
           </p>
@@ -57,38 +58,44 @@
     data(){
       return{
         user:{},
+        isFrozen:false,
       }
     },
     created() {
-      this.$axios({
-        url:'/user/'+this.$route.query.userId,
-        method:'get',
-        params:{
-          id:this.$route.query.id
-        }
-      }).then(response=>{
-        this.user=response.data;
-      }).catch(error=>console.log(error));
+      this.getPersonInfo();
     },
     methods:{
       back(){
         this.$router.go(-1);
       },
+      getPersonInfo(){
+        this.$axios({
+          url:'/user/'+this.$route.query.personId,
+          method:'get',
+          params:{
+            id:this.$route.query.userId
+          }
+        }).then(response=>{
+          this.user=response.data;
+          this.isFrozen=response.data.frozen;
+        }).catch(error=>console.log(error));
+      },
       freezeUser(){
         this.$axios({
           method: 'post',
-          url:'/user/'+this.$route.query.userId,
+          url:'/user/'+this.$route.query.personId,
           params:{
-            id:1
+            id:this.$route.query.userId
           }
         }).then(response=>{
           if(response.status==200){
             this.$message({
-              message:'冻结用户成功',
+              message:'操作成功',
               type:'success'
-            })
+            });
+            this.getPersonInfo();
           }else{
-            this.$message.error('冻结用户失败');
+            this.$message.error('操作失败');
           }
         })
           .catch(error=>console.log(error));
@@ -96,16 +103,17 @@
       resetUser(){
         this.$axios({
           method:'put',
-          url:'/user/'+this.$route.query.userId,
+          url:'/user/'+this.$route.query.personId,
           params:{
-            id:this.$route.query.id
+            id:this.$route.query.userId
           }
         }).then(response=>{
           if(response.status==200){
             this.$message({
               message:'重置密码成功',
               type:'success'
-            })
+            });
+
           }else{
             this.$message.error('重置密码失败');
           }
@@ -115,9 +123,9 @@
       logoutUser(){
         this.$axios({
           method:'delete',
-          url:'/user/'+this.$route.query.userId,
+          url:'/user/'+this.$route.query.personId,
           params:{
-            id:this.$route.query.id
+            id:this.$route.query.userId
           }
         }).then(response=>{
           if(response.status==200){

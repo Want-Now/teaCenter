@@ -11,32 +11,35 @@
           <span class="locat-first">数据库管理</span>
           <img src="../../assets/icon/unfold.png" style="height: 12px">
           <span class="locat-second">乌龙茶品种SNP指纹图谱数据库</span>
-          <img src="../../assets/icon/unfold.png" style="height: 12px" v-if="singleInput">
-          <span class="locat-second" v-if="singleInput">单条导入</span>
         </p>
 
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
             <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal btn-search" v-if="!singleInput&&!infoEdit" @click="searchInfo()">筛选</el-button>
-            <el-button class="btn-normal btn-output" v-if="!singleInput&&!infoEdit">导出</el-button>
-            <el-button class="btn-normal btn-output" v-if="!singleInput&&!infoEdit" @click="editTable()">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!singleInput&&!infoEdit">新增</el-button>
-            <el-button class="btn-normal btn-output" @click="backOrigin" v-if="singleInput||infoEdit">返回</el-button>
-            <el-button class="btn-normal btn-output" v-if="infoEdit" @click="uploadEdit()">完成</el-button>
-            <el-button class="btn-normal btn-output" @click="" v-if="singleInput">导入</el-button>
+            <el-button class="btn-normal btn-search" @click="searchInfo()">筛选</el-button>
+            <el-button class="btn-normal btn-output" v-show="!infoEdit&&!ifExport" @click="editTable()">编辑</el-button>
+            <el-button class="btn-normal btn-output" v-show="infoEdit" @click="uploadEdit()">完成</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-show="!infoEdit&&!ifExport">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="backOrigin" v-show="infoEdit||ifExport">返回</el-button>
+            <el-button class="btn-normal btn-output" v-show="ifExport" @click="exportSelection">导出</el-button>
           </p>
           <el-table
-            v-show="!singleInput"
             stripe
+            ref="multi"
             :data="databaseDisplay"
-            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+            @selection-change="changeFun">
             <el-table-column
-              v-show="!infoEdit"
+              v-if="ifExport"
+              type="selection"
+              width="55">
+            </el-table-column>
+            <el-table-column
               fixed="left">
               <template slot-scope="scope">
                 <el-button
+                  v-if="!ifExport&&!infoEdit"
                   @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
                   class="el-icon-remove"
                   size="small">
@@ -48,93 +51,42 @@
               label="茶树品种"
               width="120px"
               center>
+              <template slot-scope="scope">
+                <span v-if="!infoEdit">
+                  {{scope.row.teaSpecies}}
+                </span>
+                <el-input v-else v-model="scope.row.teaSpecies"></el-input>
+              </template>
             </el-table-column>
             <el-table-column
-              v-for="{label} in colConfigs"
-              :key="label"
-              :prop="label"
-              :label="label">
+              center
+              width="100px"
+              v-for="item in colConfigs"
+              :key="item.label"
+              :prop="item.label"
+              :label="item.label"
+              center>
+              <template slot-scope="scope">
+                <span v-if="!infoEdit">
+                  {{scope.row[item.label]}}
+                </span>
+                <el-select v-else v-model="scope.row[item.label]">
+                  <el-option
+                    v-for="option in options"
+                    :key="option.elementName"
+                    :value="option.elementName"
+                    :label="option.elementName"
+                  >
+                  </el-option>
+                </el-select>
+              </template>
             </el-table-column>
           </el-table>
-          <div class="addBtnDiv" v-if="!singleInput&&!infoEdit">
+          <div class="addBtnDiv" v-if="!infoEdit">
             <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
               <img src="../../assets/icon/add.png">
             </el-button>
           </div>
-          <!--<p class="pagination">-->
-            <!--<el-pagination-->
-              <!--@size-change="handleSizeChange"-->
-              <!--@current-change="handleCurrentChange"-->
-              <!--:current-page="currentPage4"-->
-              <!--:page-sizes="[10, 20, 30, 40]"-->
-              <!--:page-size="100"-->
-              <!--layout="total, sizes, prev, pager, next, jumper"-->
-              <!--:total="400">-->
-            <!--</el-pagination>-->
-          <!--</p>-->
-          <!--<el-table-->
-            <!--v-show="singleInput"-->
-            <!--stripe-->
-            <!--:data="addSingleData"-->
-            <!--:header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">-->
-            <!--<el-table-column-->
-              <!--center-->
-              <!--prop="teaSpecies"-->
-              <!--label="茶树品种"-->
-              <!--width="100px">-->
-              <!--<template slot-scope="scope">-->
-                <!--<el-input type="text"></el-input>-->
-              <!--</template>-->
-            <!--</el-table-column>-->
-            <!--<el-table-column-->
-              <!--v-for="{label} in colConfigs"-->
-              <!--:key="label"-->
-              <!--:prop="label"-->
-              <!--:label="label">-->
-              <!--<template slot-scope="scope">-->
-                <!--<el-select v-model="selectValue" placeholder="请选择">-->
-                  <!--<el-option-->
-                    <!--v-for="item in options"-->
-                    <!--:key="item.value"-->
-                    <!--:label="item.label"-->
-                    <!--:value="item.value">-->
-                  <!--</el-option>-->
-                <!--</el-select>-->
-              <!--</template>-->
-            <!--</el-table-column>-->
-          <!--</el-table>-->
-
-          <!--<el-table-->
-            <!--v-show="infoEdit"-->
-            <!--stripe-->
-            <!--:data="editData"-->
-            <!--:header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">-->
-            <!--<el-table-column-->
-              <!--center-->
-              <!--prop="teaSpecies"-->
-              <!--label="茶树品种"-->
-              <!--width="100px">-->
-              <!--<template slot-scope="scope">-->
-                <!--<el-input type="text" :placeholder="scope.row.teaSpecies"></el-input>-->
-              <!--</template>-->
-            <!--</el-table-column>-->
-            <!--<el-table-column-->
-              <!--v-for="{label} in colConfigs"-->
-              <!--:key="label"-->
-              <!--:prop="label"-->
-              <!--:label="label">-->
-              <!--<template slot-scope="scope">-->
-                <!--<el-select v-model="selectValue" placeholder="">-->
-                  <!--<el-option-->
-                    <!--v-for="item in options"-->
-                    <!--:key="item.value"-->
-                    <!--:label="item.label"-->
-                    <!--:value="item.value">-->
-                  <!--</el-option>-->
-                <!--</el-select>-->
-              <!--</template>-->
-            <!--</el-table-column>-->
-          <!--</el-table>-->
         </div>
 
       </div>
@@ -145,7 +97,7 @@
         width="400px"
         class="centerDialog"
         center>
-        <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
+        <el-button class="btn-normal">单条导入</el-button>
         <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
       </el-dialog>
     </el-main>
@@ -185,13 +137,15 @@
       // {teaSpecies:'nihao',cs1:'a'}
         id:1,
         dialogVisible:false,
-        singleInput:false,
         selectValue:'',
-        options:[{}],
+        options:[],
         addSingleData:[{}],
         editData:[],
         infoEdit:false,
-        search:''
+        search:'',
+        ifExport:false,
+        multipleSelection:[],
+        selectedId:[],
       }
     },
     created(){
@@ -209,10 +163,16 @@
         }).then(response=>{
           that.dataBase=response.data;
           that.databaseDisplay=response.data;
-
+          console.log(this.databaseDisplay);
         }).catch(error=>{
           console.log(error);
         });
+        this.$axios({
+          method:'get',
+          url:'/dictionary/elements/'+'36'
+        }).then(res=>{
+          this.options=res.data;
+        })
       },
       deleteRow(index,rows,row){
         this.$confirm('是否删除数据？', '确认信息', {
@@ -224,13 +184,18 @@
             this.$axios({
               url:'/database/snpMap/'+row.id,
               method: 'delete'
-            }).then(()=>{
+            }).then((res)=>{
+              console.log(res);
               this.$message({
                 type: 'success',
                 message: '删除成功'
               });
               rows.splice(index, 1);
+              this.databaseDisplay.splice(index,1);
             }).catch(error=>console.log(error));
+            // this.$axios.delete('/database/snpMap/',{params:row.id},config)
+            //   .then(res=>console.log(res))
+            //   .catch(error=>console.log(error));
           })
           .catch(action => {
             this.$message({
@@ -241,15 +206,11 @@
             })
           });
       },
-      openSingleImport(){
-        this.dialogVisible = false;
-        this.singleInput=true;
-      },
       openMultiImport(){
         this.$router.push({path:'/MultiImport',query:{databaseName:'snp'}});
       },
       backOrigin(){
-        this.singleInput=false;
+        this.ifExport=false;
         this.infoEdit=false;
       },
       editTable(){
@@ -260,6 +221,64 @@
           if(search){
             this.databaseDisplay=this.dataBase.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
           }
+      },
+      exportSelection(){
+        if(this.ifExport){
+          console.log(this.selectedId);
+          this.$axios({
+            method:'post',
+            url:'/snpMap/excelDownloads',
+            data:{
+              id:this.selectedId
+            },
+            responseType: 'blob'
+          }).then(res=>{
+            if(res.status===200){
+              this.downloadExcel(res.data);
+              this.$message({
+                type: 'success',
+                message: '导出成功'
+              });
+            }else{
+              this.$message.error('导出失败');
+            }
+          }).catch(error=>{
+            this.$message.error('导出失败');
+            console.log(error);
+          });
+          this.ifExport=!this.ifExport;
+        }else{
+          this.ifExport=!this.ifExport;
+        }
+      },
+      downloadExcel(data) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]))
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', 'snpMapExcel.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      },
+      changeFun(val) {
+        this.multipleSelection=[];
+        this.selectedId=[];
+        this.multipleSelection = val;
+        for(let i=0;i<this.multipleSelection.length;i++){
+          this.selectedId.push(this.multipleSelection[i].id);
+        }
+      },
+      uploadEdit(){
+        this.$axios({
+          url:'/database/snpMap',
+          method:'post',
+          data:{
+
+          }
+        })
       }
     }
 

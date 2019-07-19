@@ -1,8 +1,7 @@
 <template>
       <el-container class="mainContainer">
         <el-header height="60px">
-          <top-bar :username="username" :userid="userid">
-
+          <top-bar>
           </top-bar>
 
         </el-header>
@@ -65,35 +64,12 @@
         }
       },
       created(){
-        this.getUserInfo();
+        // this.getUserID();
       },
       methods:{
         toIndexAll(){
           this.$router.push('/IndexAll');
         },
-        getUserID(){
-          let that=this;
-          this.$axios({
-            method:'get',
-            url:'/myinformation'
-          }).then(response=>{
-            that.userid=response.data.id;
-            that.username=response.data.username;
-          }).catch(error=>{console.log(error);});
-
-        },
-        getUserInfo(){
-          let that=this;
-          this.$axios({
-            method:'get',
-            url:'/information',
-            params:{
-              id:1
-            }
-          }).then(response=>{
-            that.username=response.data.username;
-          }).catch(error=>{console.log(error);});
-        }
       }
 
     }

@@ -37,24 +37,25 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="dictionaryId"
+              prop="elementId"
               label="ID">
             </el-table-column>
             <el-table-column
-              prop=""
               label="数据字段"
               align="center">
+              {{dictionaryName}}
             </el-table-column>
             <el-table-column
-              prop=""
+              prop="elementName"
               label="字典显示"
               align="center">
               <template slot-scope="scope">
-                <el-input ></el-input>
+                <el-input v-model="scope.row.elementName">
+                </el-input>
               </template>
             </el-table-column>
             <el-table-column
-              prop=""
+              prop="elementSerial"
               label="排序">
               <template slot-scope="scope">
 
@@ -72,7 +73,7 @@
               label="操作">
               <template slot-scope="scope">
                 <el-button class="btn-normal" @click="handleEdit(scope.row)">保存修改</el-button>
-              </template>
+              </template>5t
             </el-table-column>
           </el-table>
           <p class="pagination">
@@ -110,57 +111,59 @@
         currentPage:1,
         pageSize:8,
         dictionaryName:'',
+        databaseStr:'',
       }
     },
     created(){
       this.databaseName=this.$route.query.databaseName;
       this.dictionaryName=this.$route.query.dictionaryName;
+      this.getDetailInfo();
     },
     methods:{
       handleEdit(row){
 
       },
-      getDictionartInfo(){
-        switch(this.$route.query.dbIndex){
-          case 1:{
-            this.databaseName='乌龙茶品种SNP指纹图谱数据库';
+      getDetailInfo(){
+        switch(this.$route.query.databaseName){
+          case '乌龙茶品种SNP指纹图谱数据库':{
             this.$axios({
-              url:'/dictionary/snp',
+              url:'/dictionary/snpMap/'+this.$route.query.dictionaryId,
               method:'get'
             }).then(response=>{
+              this.databaseStr='snpMap';
               this.dictionaryInfo=response.data;
               this.totalRow=this.dictionaryInfo.length;
             }).catch(error=>console.log(error));
             break;
           }
-          case 2:{
-            this.databaseName='乌龙茶品种资源数据库';
+          case '乌龙茶品种资源数据库':{
             this.$axios({
-              url:'/dictionary/germplasm',
+              url:'/dictionary/germplasm/'+this.$route.query.dictionaryId,
               method:'get'
             }).then(response=>{
+              this.databaseStr='germplasm';
               this.dictionaryInfo=response.data;
               this.totalRow=this.dictionaryInfo.length;
             }).catch(error=>console.log(error));
             break;
           }
-          case 3:{
-            this.databaseName='一带一路贸易数据库';
+          case '一带一路贸易数据库':{
             this.$axios({
-              url:'/dictionary/tradeinfo',
+              url:'/dictionary/tradeinfo/'+this.$route.query.dictionaryId,
               method:'get'
             }).then(response=>{
+              this.databaseStr='tradeinfo';
               this.dictionaryInfo=response.data;
               this.totalRow=this.dictionaryInfo.length;
             }).catch(error=>console.log(error));
             break;
           }
-          case 4:{
-            this.databaseName='福建省乌龙茶消费者购买行为数据库';
+          case '福建省乌龙茶消费者购买行为数据库':{
             this.$axios({
-              url:'/dictionary/consume',
+              url:'/dictionary/consume/'+this.$route.query.dictionaryId,
               method:'get'
             }).then(response=>{
+              this.databaseStr='consume';
               this.dictionaryInfo=response.data;
               this.totalRow=this.dictionaryInfo.length;
             }).catch(error=>console.log(error));
@@ -176,10 +179,12 @@
           distinguishCancelAndClose: true,
           confirmButtonText: '删除数据',
           cancelButtonText: '放弃删除'
+
         })
           .then(() => {
+            console.log(row);
             this.$axios({
-              url:'/database/snpMap/'+row.id,
+              url:'/dictionary/'+this.databaseStr+'/'+this.$route.query.dictionaryId+'/'+row.elementId,
               method: 'delete'
             }).then(()=>{
               this.$message({

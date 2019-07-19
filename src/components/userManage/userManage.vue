@@ -150,7 +150,7 @@
           method:'get',
           url:'/user',
           params:{
-            id:1
+            id:this.$route.query.userId
           }
         }).then(response=>{
           that.authorManage=response.data;
@@ -190,14 +190,14 @@
 
       },
       checkInfo(row){
-        this.$router.push({path:'/PersonManage',query:{userId:row.id,id:1}});
+        this.$router.push({path:'/PersonManage',query:{personId:row.id,userId:this.$route.query.userId}});
       },
       freezeUser(row){
         this.$axios({
           method: 'post',
           url:'/user/'+row.id,
           params:{
-            id:1
+            id:this.$route.query.userId
           }
         }).then(response=>{
           if(response.status==200){
@@ -216,7 +216,7 @@
           method:'put',
           url:'/user/'+this.row.id,
           params:{
-            id:1
+            id:this.$route.query.userId
           }
         }).then(response=>{
           if(response.status==200){

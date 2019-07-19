@@ -128,6 +128,9 @@
                 that.$axios.post('/login', formdata, config).then(
                   response => {
                     if(response.status===200){
+                      console.log(response.headers);
+                      this.$store.commit("SET_AUTH",response.headers);
+                      console.log(this.$store.state.sessionID);
                       that.$router.push('/Index')
                     }
                   }
@@ -149,14 +152,6 @@
         },
         forgetPassword(){
           this.forgetDialog=true;
-          // this.$axios({
-          //   method:'put',
-          //   url:'/forget',
-          //   params:{
-          //     email:'491072578@qq.com'
-          //   }
-          // }).then(response=>console.log(response))
-          //   .catch(error=>console.log(error));
         },
         sendVerify(){
           let that=this;
@@ -185,9 +180,6 @@
           this.$axios({
             method:'get',
             url:'/confirm/forget',
-            params:{
-              code:that.forgetVerify
-            }
           }).then(response=>{
             if(response.status==200){
               that.$message({

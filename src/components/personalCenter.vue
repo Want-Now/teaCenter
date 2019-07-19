@@ -98,7 +98,7 @@
           method:'get',
           url:'/information',
           params:{
-            id:1    //传入用户id
+            id:this.$route.query.userId    //传入用户id
           }
         }).then(response=>{
           that.userInfo=response.data;

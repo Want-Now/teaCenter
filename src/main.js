@@ -5,8 +5,11 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
-import axios from 'axios'
+import axios from './util/request'
+import store from './vuex/store'
+// import axios from 'axios'
 
+axios.defaults.withCredentials=true
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$axios = axios
@@ -15,16 +18,16 @@ Vue.prototype.$axios = axios
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
-  created () {
-    this.$axios.defaults.withCredentials=true;
-    this.$axios.defaults.baseURL='http://localhost:8082';
-    // this.$axios.defaults.baseURL='http://e4agyf.natappfree.cc';
-    this.$axios.interceptors.response.use(function (response) {
-      return response;
-    }, function (error) {
-      return Promise.reject(error);
-    });
-  },
+  // created () {
+  //   this.$axios.defaults.baseURL='http://localhost:8082';
+  //   // this.$axios.defaults.baseURL='http://e4agyf.natappfree.cc';
+  //   this.$axios.interceptors.response.use(function (response) {
+  //     return response;
+  //   }, function (error) {
+  //     return Promise.reject(error);
+  //   });
+  // },
 })

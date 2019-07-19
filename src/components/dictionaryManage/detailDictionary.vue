@@ -24,17 +24,6 @@
             :data="dictionaryInfo.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
-              width="80px"
-              fixed="left">
-              <template slot-scope="scope">
-                <el-button
-                  @click.native.prevent="deleteRow(scope.$index, dictionaryInfo,scope.row)"
-                  class="el-icon-remove"
-                  size="small">
-                </el-button>
-              </template>
-            </el-table-column>
-            <el-table-column
               prop="dictionaryId"
               sortable
               label="ID">
@@ -104,14 +93,15 @@
         }
       },
       created(){
-          this.getDictionartInfo();
+          this.getDictionaryInfo();
 
       },
       methods:{
         handleEdit(row){
-          this.$router.push({path:'/EditDictionary',query:{databaseName:this.databaseName,dictionaryName:row.dictionaryName}});
+          this.$router.push({path:'/EditDictionary',query:{databaseName:this.databaseName,
+              dictionaryName:row.dictionaryName,dictionaryId:row.dictionaryId}});
         },
-        getDictionartInfo(){
+        getDictionaryInfo(){
           switch(this.$route.query.dbIndex){
             case 1:{
               this.databaseName='乌龙茶品种SNP指纹图谱数据库';

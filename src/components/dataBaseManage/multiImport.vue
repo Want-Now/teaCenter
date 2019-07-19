@@ -62,61 +62,62 @@
         case 'snp':{
           this.databaseName='乌龙茶品种SNP指纹图谱数据库';
           this.updataUrl='/snpMap/import';
+          this.downloadUrl='/snpMap/modelDownloads';
           break;
         }
         case 'variety':{
           this.databaseName='乌龙茶品种资源数据库';
           this.updataUrl='/germplasmResources/import';
-          this.downloadUrl='/germplasmResources/excelDownloads'
+          this.downloadUrl='/germplasmResources/modelDownloads';
           break;
         }
         case 'trade':{
           this.databaseName='一带一路贸易数据库-贸易信息';
           this.updataUrl='/tradeInfo/import';
-          this.downloadUrl='/tradeInfo/excelDownloads'
+          this.downloadUrl='/tradeInfo/modelDownloads';
           break;
         }
         case 'consume':{
           this.databaseName='一带一路贸易数据库-国别基本信息与消费';
           this.updataUrl='/countryInfo/import';
-          this.downloadUrl='/countryInfo/excelDownloads'
+          this.downloadUrl='/countryInfo/modelDownloads';
           break;
         }
         case 'produce':{
           this.databaseName='一带一路贸易数据库-茶叶产值';
           this.updataUrl='/production/import';
-          this.downloadUrl='/production/excelDownloads'
+          this.downloadUrl='/production/modelDownloads';
           break;
         }
         case 'basicInfo':{
           this.databaseName='95后现制奶茶消费数据库-基本信息';
           this.updataUrl='/basicInfo/import';
-          this.downloadUrl='/basicInfo/excelDownloads'
+          this.downloadUrl='/basicInfo/modelDownloads';
 
           break;
         }
         case 'factor':{
           this.databaseName='95后现制奶茶消费数据库-因素关注程度';
           this.updataUrl='/factor/import';
-          this.downloadUrl='/factor/excelDownloads'
+          this.downloadUrl='/factor/modelDownloads';
           break;
         }
         case 'feature':{
           this.databaseName='福建省乌龙茶消费者购买行为数据库-消费者的个性特征';
           this.updataUrl='/feature/import';
-          this.downloadUrl='/feature/excelDownloads'
+          this.downloadUrl='/feature/modelDownloads';
           break;
         }
         case 'habits':{
           this.databaseName='福建省乌龙茶消费者购买行为数据库-消费者的消费习惯和购买情况';
           this.updataUrl='/habits/import';
-          this.downloadUrl='/habits/excelDownloads'
+          this.downloadUrl='/habits/modelDownloads';
           break;
         }
         case 'recognition':{
           this.databaseName='福建省乌龙茶消费者购买行为数据库-消费者对茶叶的认知度';
           this.updataUrl='/recognition/import';
-          this.downloadUrl='/recognition/excelDownloads'
+          this.downloadUrl='/recognition/modelDownloads';
           break;
         }
 
@@ -167,12 +168,37 @@
         });
       },
       downloadMould(){
-        // this.$axios({
-        //   method:'post',
-        //   url:this.downloadUrl
-        // }).then(res=>{
-        //   console.log(res);
-        // }).catch(error=>console.log(error));
+        this.$axios({
+          method:'get',
+          url:this.downloadUrl,
+          responseType: 'blob'
+        }).then(res=>{
+          if(res.status===200){
+            this.download(res.data);
+            this.$message({
+              type: 'success',
+              message: '下载成功'
+            });
+          }else{
+            this.$message.error('下载失败');
+          }
+        }).catch(error=>{
+          this.$message.error('下载失败');
+          console.log(error);
+        });
+      },
+      download (data) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]))
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', this.$route.query.databaseName+'ModelExcel.xlsx')
+
+        document.body.appendChild(link)
+        link.click()
       }
     }
 
