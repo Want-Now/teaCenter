@@ -1,31 +1,30 @@
 <template>
-  <div class="left-nav">
-    <transition name="nav">
-      <div v-if="show" class="navBar">
-        <div class="userInfo">
+  <div class="left-nav" ref="navBar">
+    <div class="navBar">
+      <div class="userInfo">
            <span class="userIcon">
              <img class="userImg" src="../../assets/timg.jpeg" @click="toPersonCenter">
            </span>
-          <div class="userInfoRight">
-            <p style="text-align: center">{{username}}</p>
-            <span class="buttonArea">
+        <div class="userInfoRight">
+          <p style="text-align: center">{{username}}</p>
+          <span class="buttonArea">
               <img class="imgSize" src="../../assets/icon/settings.png" @click="toSetting">
               <img class="imgSize" src="../../assets/icon/fen.png">
               <img class="imgSize" src="../../assets/icon/out.png" @click="logOut">
             </span>
-          </div>
-        </div>
-        <div class="nav-list">
-          <ul>
-            <li v-for="item in navName" @click="navChange(item.name)">
-              <a class="" :class="{'active':isActive==item.name}">{{item.title}}</a>
-            </li>
-          </ul>
         </div>
       </div>
-    </transition>
-    <button class="btn-nav"  :class="{'isShow':!show}" @click="show=!show">
-      <img src="../../assets/icon/back.png" style="width: 20px;">
+      <div class="nav-list">
+        <ul>
+          <li v-for="item in navName" @click="navChange(item.name)">
+            <a class="nav-li-a" :class="{'active':isActive==item.name}">{{item.title}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="btn-nav" @click="changeNavBar(show)">
+      <img src="../../assets/icon/back.png" width="20px"  ref="foldBtnImg">
     </button>
   </div>
 
@@ -34,7 +33,6 @@
 <script>
   export default {
     name: "nav-bar",
-    // props:['username','userid'],
     data(){
       return{
         show:true,
@@ -103,13 +101,41 @@
           this.username=response.data.username;
         }).catch(error=>{console.log(error);});
       },
+      changeNavBar(show){
+        let {navBar, foldBtnImg} = this.$refs;
+        if(show){
+          this.hideNavBar(navBar,foldBtnImg);
+        } else{
+          this.showNavBar(navBar,foldBtnImg);
+        }
+      },
+      showNavBar(navBar,foldBtnImg){
+        navBar.style['transform'] = 'translateX(0)';
+        foldBtnImg.style['transform'] = 'rotate(180deg)';
+        this.$data.show = true;
+      },
+      hideNavBar(navBar,foldBtnImg){
+        navBar.style['transform'] = 'translateX(-100%)';
+        foldBtnImg.style['transform'] = 'rotate(0deg)';
+        this.$data.show = false;
+      }
     }
   }
 </script>
 
 <style scoped>
-  .left-nav{width: 220px;height: 100%;}
-  .navBar{width: 100%;height: 100%;background-color: #d3d4e4;}
+  .left-nav{
+    width: 220px;
+    height: 100%;
+    position: relative;
+    transform: translateX(0);
+    transition: transform 0.8s;
+  }
+  .navBar{
+    width: 100%;
+    height: 100%;
+    background-color: #d3d4e4;
+  }
   .userIcon{
     margin-right: 10px;
   }
@@ -156,43 +182,26 @@
 
   .active{color: #ffffff;background-color: #8084b1;}
 
+  .nav-li-a{
+    cursor: pointer;
+  }
+
   .btn-nav{
-    height: 70px;
-    width: 40px;
+    height: 60px;
+    width: 35px;
     position: absolute;
-    top: 400px;
-    left: 180px;
-    border: none;
-    border-radius: 4px 0px 0px 4px;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%) rotate(180deg);
+    transition: transform 0.8s;
+    border-radius: 4px 0 0 4px;
     background: #FFFFFF;
-    opacity: 0.5;
-    padding: 20px 10px;
-
+    cursor: pointer;
   }
 
-  .nav-enter-active{
-    animation:move .5s;
-
-  }
-  .nav-leave-active{
-    animation:move .5s reverse;
-  }
-  @keyframes move {
-    0%{
-      opacity: 100%;
-    }
-    50%{
-      transform:translateX(-120px);
-      opacity: 50%;
-    }
-    100%{
-      transform:translateX(0px);
-      opacity: 0%;
-    }
-  }
-  .isShow{
-    position: absolute;
-    left: 0px;
+  .btn-nav > img{
+    transform: rotate(180deg);
+    transition: transform 1s;
   }
 
 </style>
