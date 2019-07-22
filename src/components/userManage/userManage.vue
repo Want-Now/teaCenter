@@ -14,15 +14,15 @@
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal">筛选</el-button>
+            <el-input type="text" placeholder="输入关键字" class="sortInput" v-model="search"></el-input>
+            <el-button class="btn-normal" @click="searchInfo()">筛选</el-button>
             <el-button class="addBtn" @click="addDialogVisible=true">
               <img src="../../assets/icon/add.png">
             </el-button>
           </p>
           <el-table
             stripe
-            :data="authorManage"
+            :data="displayData"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
               prop="id"
@@ -137,15 +137,22 @@
           email:[
             { validator: checkEmail, trigger: 'blur' }
           ]
-        }
+        },
+        search:'',
+        displayData:[]
       }
     },
     created(){
       this.getUserRole();
     },
     methods:{
+      searchInfo(){
+        var search=this.search;
+        if(search){
+          this.displayData=this.authorManage.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase()));
+        }
+      },
       getUserRole(){
-        let that=this;
         this.$axios({
           method:'get',
           url:'/user',
@@ -153,7 +160,8 @@
             id:this.$route.query.userId
           }
         }).then(response=>{
-          that.authorManage=response.data;
+          this.authorManage=response.data;
+          this.displayData=this.authorManage;
         }).catch(error=>console.log(error));
       },
       addUser(){

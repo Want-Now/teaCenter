@@ -54,19 +54,12 @@
                   <el-checkbox v-for="power in powers" :label="power" :key="power">{{power}}</el-checkbox>
                 </el-checkbox-group>
               </p>
-
             </div>
           </el-card>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
