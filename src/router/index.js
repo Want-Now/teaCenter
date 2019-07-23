@@ -3,7 +3,6 @@ import Router from 'vue-router'
 
 import Login from '@/components/login'
 import Index from '@/components/index'
-import IndexAll from '@/components/indexAll'
 import PersonCenter from '@/components/personalCenter'
 import Setting from '@/components/setting'
 import OperateLog from '@/components/operateLog'
@@ -39,11 +38,6 @@ export default new Router({
       path: '/Index',
       name: 'Index',
       component: Index
-    },
-    {
-      path: '/indexAll',
-      name: 'IndexAll',
-      component: IndexAll
     },
     {
       path: '/PersonCenter',

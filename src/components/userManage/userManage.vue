@@ -41,6 +41,7 @@
             </el-table-column>
             <el-table-column
               label="操作"
+              width="300px"
               align="center">
               <template slot-scope="scope">
                 <el-button class="btn-normal" @click="checkInfo(scope.row)">查看</el-button>
