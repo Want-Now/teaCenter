@@ -8,10 +8,12 @@
         <div class="textlogin">登录</div>
         <el-form :rules="formRule" :model="loginForm" ref="loginForm">
           <el-form-item prop="username">
-            <el-input type="text" class="inputcss" placeholder="请输入用户名/邮箱" v-model="loginForm.username" clearable></el-input>
+            <el-input type="text" class="inputcss" placeholder="请输入用户名/邮箱" v-model="loginForm.username"
+                      clearable></el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input type="password" class="inputcss" placeholder="请输入密码" v-model="loginForm.password" clearable></el-input>
+            <el-input type="password" class="inputcss" placeholder="请输入密码" v-model="loginForm.password"
+                      clearable></el-input>
           </el-form-item>
           <el-form-item prop="identifyCode">
             <el-col :span="16">
@@ -60,180 +62,181 @@
 </template>
 
 <script>
-    import Identity from './reuseComponent/identity'
-    export default {
-        name: "login",
-      components:{
-          Identity
+  import Identity from './reuseComponent/identity';
+
+  export default {
+    name: 'login',
+    components: {
+      Identity,
+    },
+    data() {
+      return {
+        identifyCode: '',
+        identifyCodes: 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz',
+        loginForm: {
+          username: '',
+          password: '',
+          identifyCode: '',
+        },
+        formRule: {
+          username: [
+            { required: true, message: '请输入用户名/邮箱', trigger: 'blur' },
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+          ],
+          identifyCode: [
+            { required: true, message: '请输入验证码', trigger: 'blur' },
+            { max: 4, min: 4, message: '长度为4个字符', trigger: 'blur' },
+          ],
+        },
+        forgetDialog: false,
+        emailInForget: '',
+        forgetVerify: '',
+      };
+    },
+    mounted() {
+      this.identifyCode = '';
+      this.makeCode(this.identifyCodes, 4);
+    },
+    methods: {
+      randomNum( min, max ) {
+        return Math.floor(Math.random() * (max - min) + min);
       },
-      data(){
-          return{
-            identifyCode:'',
-            identifyCodes: "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz",
-            loginForm:{
-              username:'',
-              password:'',
-              identifyCode:'',
-            },
-            formRule:{
-              username:[
-                {required:true,message: '请输入用户名/邮箱', trigger: 'blur'}
-              ],
-              password:[
-                {required:true,message: '请输入密码', trigger: 'blur'}
-              ],
-              identifyCode:[
-                {required:true,message: '请输入验证码', trigger: 'blur'},
-                {max:4,min:4, message: '长度为4个字符', trigger: 'blur'}
-              ]
-            },
-            forgetDialog:false,
-            emailInForget:'',
-            forgetVerify:'',
-          }
-      },
-      mounted() {
-        this.identifyCode = "";
+      refreshCode() {
+        this.identifyCode = '';
         this.makeCode(this.identifyCodes, 4);
       },
-      methods:{
-        randomNum(min, max) {
-          return Math.floor(Math.random() * (max - min) + min);
-        },
-        refreshCode() {
-          this.identifyCode = "";
-          this.makeCode(this.identifyCodes, 4);
-        },
-        makeCode(o, l) {
-          for (let i = 0; i < l; i++) {
-            this.identifyCode += this.identifyCodes[
-              this.randomNum(0, this.identifyCodes.length)
-              ];
-          }
-        },
-
-        submitForm(loginForm){
-          let that=this;
-          let formdata=new FormData();
-          formdata.append('username',this.loginForm.username);
-          formdata.append('password',this.loginForm.password);
-          this.$refs[loginForm].validate((valid) => {
-            if(valid){
-              if(that.identifyCode.toLocaleLowerCase()===that.loginForm.identifyCode.toLocaleLowerCase()) {
-                let config = {
-                  headers: {
-                    'Content-Type': 'multipart/form-data'
-                  }
-                }
-                that.$axios.post('/login', formdata, config).then(
-                  response => {
-                    if(response.status===200){
-                      console.log(response.headers);
-                      this.$store.commit("SET_AUTH",response.headers);
-                      console.log(this.$store.state.sessionID);
-                      that.$router.push('/Index')
-                    }
-                  }
-                ).catch(
-                  error => {
-                    console.log(error);
-                  });
-              }
-              else {
-                alert("验证码错误！");
-                that.$refs[loginForm].resetFields();
-              }
-            }
-            else {
-              console.log('error submit!!');
-              return false;
-            }
-          });
-        },
-        forgetPassword(){
-          this.forgetDialog=true;
-        },
-        sendVerify(){
-          let that=this;
-          this.$axios({
-            method:'put',
-            url:'/forget',
-            params:{
-              email:that.emailInForget
-            }
-          }).then(response=>{
-            if(response.status==200){
-              that.$message({
-                message: '发送验证码成功',
-                type: 'success'
-              });
-              that.forgetDialog = false;
-            }
-          })
-            .catch(error=>{
-              console.log(error);
-              that.$message.error('发送验证码失败');
-            });
-        },
-        checkVerify(){
-          let that=this;
-          this.$axios({
-            method:'get',
-            url:'/confirm/forget',
-          }).then(response=>{
-            if(response.status==200){
-              that.$message({
-                message: '初始化密码成功',
-                type: 'success'
-              });
-            }
-          })
-            .catch(error=>{
-              console.log(error);
-              that.$message.error('验证失败');
-            });
+      makeCode( o, l ) {
+        for (let i = 0; i < l; i++) {
+          this.identifyCode += this.identifyCodes[ this.randomNum(0, this.identifyCodes.length) ];
         }
-      }
+      },
 
+      submitForm( loginForm ) {
+        let that = this;
+        let formdata = new FormData();
+        formdata.append('username', this.loginForm.username);
+        formdata.append('password', this.loginForm.password);
+        this.$refs[ loginForm ].validate(( valid ) => {
+          if (valid) {
+            if (that.identifyCode.toLocaleLowerCase() === that.loginForm.identifyCode.toLocaleLowerCase()) {
+              let config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              };
+              that.$axios.post('/login', formdata, config).then(
+                response => {
+                  if (response.status === 200) {
+                    console.log(response.headers);
+                    this.$store.commit('SET_AUTH', response.headers);
+                    console.log(this.$store.state.sessionID);
+                    that.$router.push('/Index');
+                  }
+                },
+              ).catch(
+                error => {
+                  that.$message.error('登录失败！请检查与数据库的连接');
+                  console.log(error);
+                });
+            } else {
+              that.$message.error('验证码错误！');
+              that.$refs[ loginForm ].resetFields();
+            }
+          } else {
+            that.$message.error('有必填项未填哦～');
+            return false;
+          }
+        });
+      },
 
-    }
+      forgetPassword() {
+        this.forgetDialog = true;
+      },
+
+      sendVerify() {
+        let that = this;
+        this.$axios({
+          method: 'put',
+          url: '/forget',
+          params: {
+            email: that.emailInForget,
+          },
+        }).then(response => {
+          if (response.status == 200) {
+            that.$message({
+              message: '发送验证码成功',
+              type: 'success',
+            });
+            that.forgetDialog = false;
+          }
+        }).catch(error => {
+          console.log(error);
+          that.$message.error('发送验证码失败');
+        });
+      },
+
+      checkVerify() {
+        let that = this;
+        this.$axios({
+          method: 'get',
+          url: '/confirm/forget',
+        }).then(response => {
+          if (response.status == 200) {
+            that.$message({
+              message: '初始化密码成功',
+              type: 'success',
+            });
+          }
+        }).catch(error => {
+          console.log(error);
+          that.$message.error('验证失败');
+        });
+      },
+    },
+
+  };
 </script>
 
 <style scoped>
-  .el-main{
+  .el-main {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .login-main{
+  .login-main {
     width: 500px;
-    background-color: #ffffff;
+    background-color: #fff;
     margin: auto;
     border-radius: 5px;
-    border:3px solid #e2e3e5;
+    border: 3px solid #e2e3e5;
     font-size: 20px;
     padding: 0 50px 30px 50px;
   }
-  .login-title{
+
+  .login-title {
     position: relative;
     left: 35%;
-    top:-30px;
+    top: -30px;
     width: 30%;
     background-color: #494e8f;
-    color: #ffffff;
+    color: #fff;
     height: 60px;
     line-height: 60px;
     text-align: center;
     border-radius: 5px;
 
   }
-  .textlogin{
+
+  .textlogin {
     margin-bottom: 20px;
     text-align: center;
     color: #808080;
   }
-  .btn-sample{
+
+  .btn-sample {
     height: 50px;
     width: 100%;
     font-size: 20px;
@@ -241,12 +244,14 @@
     border-color: #494e8f;
     color: white;
   }
-  .btn-sample:hover{
+
+  .btn-sample:hover {
     background-color: #8084b1;
     border-color: #8084b1;
     color: white;
   }
-  .btn-sample:focus{
+
+  .btn-sample:focus {
     background-color: #8084b1;
     border-color: #8084b1;
     color: white;
@@ -258,14 +263,15 @@
     width: 114px;
     height: 50px;
   }
-  .btn-forget{
+
+  .btn-forget {
     border: none;
     background-color: white;
     color: #494e8f;
   }
 </style>
 <style>
-  .inputcss .el-input__inner{
+  .inputcss .el-input__inner {
     height: 50px;
   }
 </style>
