@@ -27,7 +27,7 @@
           <el-table
             stripe
             ref="multi"
-            :data="databaseDisplay"
+            :data="databaseDisplay.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
             @selection-change="changeFun">
             <el-table-column
@@ -50,6 +50,7 @@
               prop="teaSpecies"
               label="茶树品种"
               width="120px"
+              fixed="left"
               center>
               <template slot-scope="scope">
                 <span v-if="!infoEdit">
@@ -82,15 +83,17 @@
               </template>
             </el-table-column>
           </el-table>
-          <div class="addBtnDiv" v-if="!infoEdit">
-            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
-              <img src="../../assets/icon/add.png">
-            </el-button>
-          </div>
+          <p class="pagination">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
+          </p>
         </div>
-
       </div>
-
       <el-dialog
         title="新增"
         :visible.sync="dialogVisible"
@@ -146,6 +149,9 @@
         ifExport:false,
         multipleSelection:[],
         selectedId:[],
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
       }
     },
     created(){
@@ -156,14 +162,13 @@
     },
     methods:{
       getSnpMap(){
-        let that=this;
         this.$axios({
           method:'get',
           url:'/database/snpMap',
         }).then(response=>{
-          that.dataBase=response.data;
-          that.databaseDisplay=response.data;
-          console.log(this.databaseDisplay);
+          this.dataBase=response.data;
+          this.databaseDisplay=response.data;
+          this.totalRow=this.databaseDisplay.length;
         }).catch(error=>{
           console.log(error);
         });
@@ -192,6 +197,7 @@
               });
               rows.splice(index, 1);
               this.databaseDisplay.splice(index,1);
+              this.totalRow=this.databaseDisplay.length;
             }).catch(error=>console.log(error));
             // this.$axios.delete('/database/snpMap/',{params:row.id},config)
             //   .then(res=>console.log(res))
@@ -279,7 +285,10 @@
 
           }
         })
-      }
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
     }
 
   }
@@ -308,14 +317,6 @@
     text-align: center;
     margin: 0px;
     padding: 20px;
-  }
-  .addBtn{
-    border: none;
-    height: 80px;
-    background-color: white;
-  }
-  .addBtnDiv{
-    background-color: white;
   }
   .el-icon-remove{
     background-color: rgba(255,255,255,0);

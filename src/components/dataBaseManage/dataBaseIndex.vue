@@ -43,12 +43,6 @@
               align="center">
             </el-table-column>
             <el-table-column
-              prop="size"
-              label="大小"
-              width="100px"
-              align="center">
-            </el-table-column>
-            <el-table-column
               prop="remark"
               label="备注"
               align="center">
@@ -79,10 +73,10 @@
     data(){
       return{
         dataBase:[
-          {index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2018.08.01 23:55:41',uploader:'叶乃兴',size:''},
-          {index:'2',name:'乌龙茶品种资源数据库',changeDate:'2018.08.01 23:55:41',uploader:'洪永聪',size:''},
-          {index:'3',name:'一带一路贸易数据库',changeDate:'2018.08.01 23:55:41',uploader:'杨超英',size:''},
-          {index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2018.08.01 23:55:41',uploader:'林畅',size:''}
+          {index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2019.06.12 23:54:20',uploader:'叶乃兴',size:''},
+          {index:'2',name:'乌龙茶品种资源数据库',changeDate:'2019.06.12 23:53:12',uploader:'洪永聪',size:''},
+          {index:'3',name:'一带一路贸易数据库',changeDate:'2019.06.12 23:50:33',uploader:'杨超英',size:''},
+          {index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2019.06.12 23:55:41',uploader:'林畅',size:''}
         ],
 
       }

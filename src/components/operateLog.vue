@@ -33,7 +33,6 @@
           </p>
           <el-table
             stripe
-            show-header="false"
             :data="operateLog"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column

@@ -283,6 +283,22 @@
           }
         }
       },
+      openSingleImport(){
+        switch (this.activeCard) {
+          case 'tradeInfo':{
+            this.$router.push({path:'/MultiImport',query:{name:'trade'}});
+            break;
+          }
+          case 'consume':{
+            this.$router.push({path:'/MultiImport',query:{name:'consume'}});
+            break;
+          }
+          case 'teaProduce':{
+            this.$router.push({path:'/MultiImport',query:{name:'produce'}});
+            break;
+          }
+        }
+      }
     }
   }
 </script>

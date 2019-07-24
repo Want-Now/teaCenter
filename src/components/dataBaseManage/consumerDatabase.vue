@@ -245,6 +245,32 @@
       this.getRecognition();
     },
     methods:{
+      openSingleImport(){
+        var dbName='';
+        switch (this.activeCard) {
+          case 'basicInfo':{
+            dbName='basicInfo';
+            break;
+          }
+          case 'factor':{
+            dbName='factor';
+            break;
+          }
+          case 'feature':{
+            dbName='feature';
+            break;
+          }
+          case 'habits':{
+            dbName='habits';
+            break;
+          }
+          case 'recognition':{
+            dbName='recognition';
+            break;
+          }
+        }
+        this.$router.push({path:'/SingleImport',query:{name:dbName}});
+      },
       handleClick(tab, event) {
         console.log(tab, event);
       },

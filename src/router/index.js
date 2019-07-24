@@ -15,7 +15,8 @@ import SNPManage from '@/components/dataBaseManage/snpManage'
 import TeaVarietyDatabase from '@/components/dataBaseManage/teaVarietyDatabase'
 import BeltRoadDatabase from '@/components/dataBaseManage/beltRoadDatabase'
 import ConsumerDatabase from '@/components/dataBaseManage/consumerDatabase'
-import MultiImport from '@/components/dataBaseManage/MultiImport'
+import MultiImport from '@/components/dataBaseManage/multiImport'
+import SingleImport from '@/components/dataBaseManage/singleImport'
 
 import UserManage from '@/components/userManage/userManage'
 import PersonManage from '@/components/userManage/PersonManage'
@@ -99,6 +100,11 @@ export default new Router({
       name:'MultiImport',
       component: MultiImport
     },
+    {
+      path:'/SingleImport',
+      name:'SingleImport',
+      component: SingleImport
+    },
 
     {
       path:'/UserManage',
@@ -125,6 +131,6 @@ export default new Router({
       path:'/EditDictionary',
       name:'EditDictionary',
       component: EditDictionary
-    },
+    }
   ]
 })

@@ -144,6 +144,9 @@
       openMultiImport(){
         this.$router.push({path:'/MultiImport',query:{databaseName:'variety'}});
       },
+      openSingleImport(){
+        this.$router.push({path:'/SingleImport',query:{name:'variety'}})
+      }
     }
 
   }

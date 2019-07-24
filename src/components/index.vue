@@ -32,7 +32,8 @@
                     </el-table-column>
                     <el-table-column
                       prop="dictionaryName"
-                      label="字段名称">
+                      label="字段名称"
+                      center>
                     </el-table-column>
                   </el-table>
                 </span>
@@ -51,7 +52,8 @@
                     </el-table-column>
                     <el-table-column
                       prop="dictionaryName"
-                      label="字段名称">
+                      label="字段名称"
+                      center>
                     </el-table-column>
                   </el-table>
                 </span>
@@ -70,7 +72,8 @@
                     </el-table-column>
                     <el-table-column
                       prop="dictionaryName"
-                      label="字段名称">
+                      label="字段名称"
+                      center>
                     </el-table-column>
                   </el-table>
                 </span>
@@ -88,6 +91,7 @@
                       label="ID">
                     </el-table-column>
                     <el-table-column
+                      center
                       prop="dictionaryName"
                       label="字段名称">
                     </el-table-column>
@@ -114,10 +118,10 @@
         return{
           userid:'',
           username:'',
-          snp:'',
-          tradeInfo:'',
-          consume:'',
-          germplasm:''
+          snp:[],
+          tradeInfo:[],
+          consume:[],
+          germplasm:[]
 
         }
       },
