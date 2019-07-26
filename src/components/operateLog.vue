@@ -13,34 +13,36 @@
 
         <div class="tableDiv">
           <p class="searchBar">
-            <img src="../assets/icon/search.png">
-            <!--<el-col :span="5">-->
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <!--</el-col>-->
+            <el-select v-model="logType" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
             <span class="dateSpan">
               <el-date-picker
-                class="datePicker"
-                type="daterange"
+                v-model="dateInterval"
+                type="datetimerange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期">
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </span>
-
-            <!--</el-col>-->
-            <el-button class="btn-normal">筛选</el-button>
-            <el-button class="btn-normal">删除</el-button>
+            <el-button class="btn-normal" @click="getInfo()">筛选</el-button>
           </p>
           <el-table
             stripe
-            :data="operateLog"
+            :data="operateLog.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
-              prop="index"
+              prop="i"
               label="编号">
             </el-table-column>
             <el-table-column
-              prop="user"
+              prop="username"
               label="用户"
               sortable>
             </el-table-column>
@@ -50,35 +52,23 @@
               sortable>
             </el-table-column>
             <el-table-column
-              prop="operate"
+              prop="description"
               label="操作">
-            </el-table-column>
-            <el-table-column
-              type="selection"
-              width="55px">
             </el-table-column>
           </el-table>
           <p class="pagination">
-            <!--<el-pagination-->
-              <!--@size-change="handleSizeChange"-->
-              <!--@current-change="handleCurrentChange"-->
-              <!--:current-page="currentPage4"-->
-              <!--:page-sizes="[10, 20, 30, 40]"-->
-              <!--:page-size="100"-->
-              <!--layout="total, sizes, prev, pager, next, jumper"-->
-              <!--:total="400">-->
-            <!--</el-pagination>-->
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -90,9 +80,33 @@
     data(){
       return{
         operateLog:[],
-
+        options:[{value:1,label:'登录系统'},{value:2,label:'登出系统'},{value:3,label:'查询数据库'},{value:4,label:'导入数据'},
+          {value:5,label:'导出数据'},{value:6,label:'修改权限'},{value:7,label:'修改密码'},{value:8,label:'修改邮箱'}],
+        logType:null,
+        dateInterval:'',
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
       }
     },
+    methods:{
+      getInfo(){
+        this.$axios({
+          url:'/get_log',
+          method:'get',
+          params:{
+            start_date:this.dateInterval[0],
+            end_date:this.dateInterval[1],
+            logType: this.logType
+          }
+        }).then(res=>{
+          this.operateLog=res.data;
+          this.totalRow=this.operateLog.length;
+        }).catch(error=>{
+          console.log(error);
+          alert("请求错误")});
+      }
+    }
 
   }
 </script>
@@ -116,11 +130,8 @@
     width: 15%;
   }
   .dateSpan{
-    margin-left: 20%;
+    margin-left: 20px;
     width: 50%;
-  }
-  .el-date-picker{
-    width: 100%;
   }
   .searchBar .el-button{
     margin-right: 20px;

@@ -278,13 +278,13 @@
         }
       },
       uploadEdit(){
-        this.$axios({
-          url:'/database/snpMap',
-          method:'post',
-          data:{
-
-          }
-        })
+        // this.$axios({
+        //   url:'/database/snpMap',
+        //   method:'post',
+        //   data:{
+        //
+        //   }
+        // })
       },
       handleCurrentChange(val) {
         this.currentPage=val;
