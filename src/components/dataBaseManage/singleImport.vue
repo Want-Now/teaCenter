@@ -26,14 +26,13 @@
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
               center
-              width="100px"
               v-for="item in colConfigs"
               :key="item.name"
               :prop="item.name"
               :label="item.label"
               center>
               <template slot-scope="scope">
-                <el-input v-model="scope.row[item.label]"></el-input>
+                <el-input v-model="scope.row[item.name]"></el-input>
               </template>
             </el-table-column>
           </el-table>
@@ -156,7 +155,8 @@
         return{
           importData:[{}],
           colConfigs:[],
-          dbName:''
+          dbName:'',
+          dbUrl:''
         }
       },
       created(){
@@ -168,60 +168,86 @@
               case 'snp':{
                 this.colConfigs=this.snp;
                 this.dbName='乌龙茶品种SNP指纹图谱数据库';
+                this.dbUrl='/snpMap'
                 break;
               }
               case 'variety':{
                 this.colConfigs=this.teaVariety;
                 this.dbName='乌龙茶品种资源数据库';
+                this.dbUrl='/germplasmResources'
                 break;
               }
               //ConsumeDatabase
               case 'basicInfo':{
                 this.colConfigs=this.basicInfoCol;
                 this.dbName='95后现制奶茶消费数据库-基本信息';
+                this.dbUrl='/basicInfo'
                 break;
               }
               case 'factor':{
                 this.colConfigs=this.factorCol;
                 this.dbName='95后现制奶茶消费数据库-因素关注程度';
+                this.dbUrl='/factor'
                 break;
               }
               case 'feature':{
                 this.colConfigs=this.featureCol;
                 this.dbName='福建省乌龙茶消费者购买行为数据库-消费者的个性特征';
+                this.dbUrl='/feature'
                 break;
               }
               case 'habits':{
                 this.colConfigs=this.habitsCol;
                 this.dbName='福建省乌龙茶消费者购买行为数据库-消费者的消费习惯和购买情况';
+                this.dbUrl='/habits'
                 break;
               }
               case 'recognition':{
                 this.colConfigs=this.recognitionCol;
                 this.dbName='福建省乌龙茶消费者购买行为数据库-消费者对茶叶的认知度';
+                this.dbUrl='/recognition'
                 break;
               }
 
               //beltRoad
               case 'trade':{
                 this.colConfigs=this.tradeInfoCol;
-                this.dbName='一带一路贸易数据库-贸易信息';
+                this.dbName='一带一路贸易数据库-c贸易信息';
+                this.dbUrl='/tradeInfo'
                 break;
               }
               case 'consume':{
                 this.colConfigs=this.countryCol;
                 this.dbName='一带一路贸易数据库-国别基本信息与消费';
+                this.dbUrl='/countryInfo'
                 break;
               }
               case 'produce':{
                 this.colConfigs=this.productionCol;
                 this.dbName='一带一路贸易数据库-茶叶产值';
+                this.dbUrl='/production'
                 break;
               }
             }
           },
         importNewData(){
-
+          console.log(this.importData[0]);
+          this.$axios({
+            url:'/database'+this.dbUrl,
+            method:'post',
+            data:this.importData[0]
+          }).then(()=>{
+            this.$message({
+              type: 'success',
+              message: '导入成功'
+            });
+          }).catch(error=>{
+            alert('导入失败,请输入正确的格式');
+            console.log(error);
+          });
+        },
+        backOrigin(){
+          this.$router.go(-1);
         }
       }
     }

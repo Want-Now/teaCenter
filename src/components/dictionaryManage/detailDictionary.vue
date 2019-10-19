@@ -16,8 +16,8 @@
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal">筛选</el-button>
+            <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
+            <el-button class="btn-normal" @click="searchInfo()">筛选</el-button>
           </p>
           <el-table
             stripe
@@ -65,16 +65,10 @@
               :total="totalRow">
             </el-pagination>
           </p>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -86,15 +80,16 @@
       data(){
         return{
           dictionaryInfo:[],
+          dictionaryInfoCopy:[],
           databaseName:'',
           totalRow:0,
           currentPage:1,
           pageSize:8,
+          search:''
         }
       },
       created(){
           this.getDictionaryInfo();
-
       },
       methods:{
         handleEdit(row){
@@ -110,6 +105,7 @@
                 method:'get'
               }).then(response=>{
                 this.dictionaryInfo=response.data;
+                this.dictionaryInfoCopy=response.data;
                 this.totalRow=this.dictionaryInfo.length;
               }).catch(error=>console.log(error));
               break;
@@ -121,6 +117,7 @@
                 method:'get'
               }).then(response=>{
                 this.dictionaryInfo=response.data;
+                this.dictionaryInfoCopy=response.data;
                 this.totalRow=this.dictionaryInfo.length;
               }).catch(error=>console.log(error));
               break;
@@ -132,6 +129,7 @@
                 method:'get'
               }).then(response=>{
                 this.dictionaryInfo=response.data;
+                this.dictionaryInfoCopy=response.data;
                 this.totalRow=this.dictionaryInfo.length;
               }).catch(error=>console.log(error));
               break;
@@ -143,6 +141,7 @@
                 method:'get'
               }).then(response=>{
                 this.dictionaryInfo=response.data;
+                this.dictionaryInfoCopy=response.data;
                 this.totalRow=this.dictionaryInfo.length;
               }).catch(error=>console.log(error));
               break;
@@ -152,33 +151,14 @@
         handleCurrentChange(val) {
           this.currentPage=val;
         },
-        deleteRow(index, rows,row){
-          this.$confirm('是否删除数据？', '确认信息', {
-            distinguishCancelAndClose: true,
-            confirmButtonText: '删除数据',
-            cancelButtonText: '放弃删除'
-          })
-            .then(() => {
-              this.$axios({
-                url:'/database/snpMap/'+row.id,
-                method: 'delete'
-              }).then(()=>{
-                this.$message({
-                  type: 'success',
-                  message: '删除成功'
-                });
-                rows.splice(index, 1);
-              }).catch(error=>console.log(error));
-            })
-            .catch(action => {
-              this.$message({
-                type: 'info',
-                message: action === 'cancel'
-                  ? '放弃删除'
-                  : '停留在当前页面'
-              })
-            });
-        }
+        searchInfo(){
+          var search=this.search;
+          if(search){
+            this.dictionaryInfo=this.dictionaryInfoCopy.filter(data => !search || data.dictionaryName.toLowerCase().includes(search.toLowerCase()));
+          }else{
+            this.dictionaryInfo=this.dictionaryInfoCopy;
+          }
+        },
       }
     }
 </script>

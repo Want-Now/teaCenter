@@ -18,72 +18,73 @@
             <img src="../../assets/icon/search.png">
             <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
             <el-button class="btn-normal btn-search" @click="searchInfo()">筛选</el-button>
-            <el-button class="btn-normal btn-output" v-show="!infoEdit&&!ifExport" @click="editTable()">编辑</el-button>
-            <el-button class="btn-normal btn-output" v-show="infoEdit" @click="uploadEdit()">完成</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-show="!infoEdit&&!ifExport">新增</el-button>
-            <el-button class="btn-normal btn-output" @click="backOrigin" v-show="infoEdit||ifExport">返回</el-button>
-            <el-button class="btn-normal btn-output" v-show="ifExport" @click="exportSelection">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
+            <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
+
+
           </p>
-          <el-table
-            stripe
-            ref="multi"
-            :data="databaseDisplay.slice((currentPage-1)*pageSize,currentPage*pageSize)"
-            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
-            @selection-change="changeFun">
-            <el-table-column
-              v-if="ifExport"
-              type="selection"
-              width="55">
-            </el-table-column>
-            <el-table-column
-              fixed="left">
-              <template slot-scope="scope">
-                <el-button
-                  v-if="!ifExport&&!infoEdit"
-                  @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
-                  class="el-icon-remove"
-                  size="small">
-                </el-button>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="teaSpecies"
-              label="茶树品种"
-              width="120px"
-              fixed="left"
-              center>
-              <template slot-scope="scope">
-                <span v-if="!infoEdit">
-                  {{scope.row.teaSpecies}}
-                </span>
-                <el-input v-else v-model="scope.row.teaSpecies"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column
-              center
-              width="100px"
-              v-for="item in colConfigs"
-              :key="item.label"
-              :prop="item.label"
-              :label="item.label"
-              center>
-              <template slot-scope="scope">
-                <span v-if="!infoEdit">
-                  {{scope.row[item.label]}}
-                </span>
-                <el-select v-else v-model="scope.row[item.label]">
-                  <el-option
-                    v-for="option in options"
-                    :key="option.elementName"
-                    :value="option.elementName"
-                    :label="option.elementName"
-                  >
-                  </el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </el-table>
-          <p class="pagination">
+          <div class="tableClass">
+            <el-table
+              stripe
+              :data="ifExport?databaseDisplay:databaseDisplay.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+              :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+              @selection-change="changeFun">
+              <el-table-column
+                v-if="ifExport"
+                type="selection"
+                width="55">
+              </el-table-column>
+              <el-table-column
+                fixed="left">
+                <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
+                    class="el-icon-remove"
+                    size="small">
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="teaSpecies"
+                label="茶树品种"
+                width="120px"
+                fixed="left"
+                center>
+                <template slot-scope="scope">
+                  <span v-if="!infoEdit">
+                    {{scope.row.teaSpecies}}
+                  </span>
+                  <el-input v-else v-model="scope.row.teaSpecies"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                width="120px"
+                v-for="item in colConfigs"
+                :key="item.label"
+                :prop="item.label"
+                :label="item.label"
+                center>
+                <template slot-scope="scope">
+                  <span v-if="!infoEdit">
+                    {{scope.row[item.label]}}
+                  </span>
+                  <el-select v-else v-model="scope.row[item.label]">
+                    <el-option
+                      v-for="option in options"
+                      :key="option.elementName"
+                      :value="option.elementName"
+                      :label="option.elementName"
+                    >
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <p class="pagination" v-if="!ifExport">
             <el-pagination
               @current-change="handleCurrentChange"
               :current-page="currentPage"
@@ -100,14 +101,11 @@
         width="400px"
         class="centerDialog"
         center>
-        <el-button class="btn-normal">单条导入</el-button>
+        <el-button class="btn-normal" @click="openSingleImport()">单条导入</el-button>
         <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
       </el-dialog>
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -137,28 +135,21 @@
       return{
         dataBase:[],
         databaseDisplay:[],
-      // {teaSpecies:'nihao',cs1:'a'}
-        id:1,
         dialogVisible:false,
-        selectValue:'',
         options:[],
-        addSingleData:[{}],
-        editData:[],
-        infoEdit:false,
         search:'',
         ifExport:false,
+        infoEdit:false,
         multipleSelection:[],
         selectedId:[],
         totalRow:0,
         currentPage:1,
         pageSize:8,
+        infoEdit:false,
       }
     },
     created(){
       this. getSnpMap();
-    },
-    computed:{
-
     },
     methods:{
       getSnpMap(){
@@ -197,11 +188,9 @@
               });
               rows.splice(index, 1);
               this.databaseDisplay.splice(index,1);
-              this.totalRow=this.databaseDisplay.length;
+              this.dataBase.splice(index,1);
+              this.totalRow--;
             }).catch(error=>console.log(error));
-            // this.$axios.delete('/database/snpMap/',{params:row.id},config)
-            //   .then(res=>console.log(res))
-            //   .catch(error=>console.log(error));
           })
           .catch(action => {
             this.$message({
@@ -215,22 +204,32 @@
       openMultiImport(){
         this.$router.push({path:'/MultiImport',query:{databaseName:'snp'}});
       },
+      openSingleImport(){
+        this.$router.push({path:'/SingleImport',query:{name:'variety'}})
+      },
       backOrigin(){
         this.ifExport=false;
         this.infoEdit=false;
       },
       editTable(){
-        this.infoEdit=!this.infoEdit;
+        this.infoEdit=true;
       },
       searchInfo(){
           var search=this.search;
           if(search){
             this.databaseDisplay=this.dataBase.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+          }else{
+            this.databaseDisplay=this.dataBase;
           }
       },
+      getSelectedId(){
+        for(var value of this.multipleSelection){
+          this.selectedId.push(value.id);
+        }
+      },
       exportSelection(){
+        this.getSelectedId();
         if(this.ifExport){
-          console.log(this.selectedId);
           this.$axios({
             method:'post',
             url:'/snpMap/excelDownloads',
@@ -269,22 +268,26 @@
         document.body.appendChild(link)
         link.click()
       },
-      changeFun(val) {
-        this.multipleSelection=[];
-        this.selectedId=[];
-        this.multipleSelection = val;
-        for(let i=0;i<this.multipleSelection.length;i++){
-          this.selectedId.push(this.multipleSelection[i].id);
-        }
-      },
       uploadEdit(){
         // this.$axios({
         //   url:'/database/snpMap',
         //   method:'post',
-        //   data:{
-        //
+        //   data:this.databaseDisplay
+        // }).then(res=>{
+        //   if(res.state===200) {
+        //     this.dataBase=this.databaseDisplay;
+        //     alert('修改成功');
+        //   }else {
+        //     this.databaseDisplay = this.dataBase;
+        //     alert('修改失败');
         //   }
+        // }).catch(error=>{
+        //   alert('修改失败');
+        //   console.log(error);
         // })
+      },
+      changeFun(val) {
+        this.multipleSelection = val;
       },
       handleCurrentChange(val) {
         this.currentPage=val;
@@ -297,6 +300,10 @@
 <style scoped>
   .tableDiv{
     padding: 10px 100px;
+  }
+  .tableClass{
+    max-height: 600px;
+    overflow: auto;
   }
   .searchBar{
     height: 60px;
@@ -319,7 +326,9 @@
     padding: 20px;
   }
   .el-icon-remove{
-    background-color: rgba(255,255,255,0);
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
     border: none;
     color: #ccadad;
   }

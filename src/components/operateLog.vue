@@ -105,7 +105,10 @@
         }).catch(error=>{
           console.log(error);
           alert("请求错误")});
-      }
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
     }
 
   }

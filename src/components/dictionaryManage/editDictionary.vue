@@ -58,7 +58,6 @@
               prop="elementSerial"
               label="排序">
               <template slot-scope="scope">
-
               </template>
             </el-table-column>
             <el-table-column
@@ -72,7 +71,7 @@
             <el-table-column
               label="操作">
               <template slot-scope="scope">
-                <el-button class="btn-normal" @click="handleEdit(scope.row)">保存修改</el-button>
+                <el-button class="btn-normal" @click="saveEdit(scope.row)">保存修改</el-button>
               </template>5t
             </el-table-column>
           </el-table>
@@ -85,16 +84,10 @@
               :total="totalRow">
             </el-pagination>
           </p>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -120,9 +113,6 @@
       this.getDetailInfo();
     },
     methods:{
-      handleEdit(row){
-
-      },
       getDetailInfo(){
         switch(this.$route.query.databaseName){
           case '乌龙茶品种SNP指纹图谱数据库':{
@@ -202,7 +192,19 @@
                 : '停留在当前页面'
             })
           });
-      }
+      },
+      saveEdit(row){
+        this.$axios({
+          url:'/dictionary/'+this.databaseStr+'/'+this.$route.query.dictionaryId,
+          method:'put',
+          params:{
+            element_id: row.elementId,
+            dictionary_code: this.dictionaryName,
+            element_name: row.elementName
+          }
+        }).then(res=>console.log(res))
+          .catch(err=>console.log(err));
+      },
     }
   }
 </script>

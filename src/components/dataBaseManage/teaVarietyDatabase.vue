@@ -16,53 +16,67 @@
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
+            <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
             <el-button class="btn-normal btn-search">筛选</el-button>
-            <el-button class="btn-normal btn-output">导出</el-button>
-            <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
+            <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-table
             stripe
-            :data="teaVariety"
-            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+            :data="ifExport?teaVariety:teaVariety.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+            :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+            @selection-change="changeFun">
+            <el-table-column
+              v-if="ifExport"
+              type="selection"
+              width="55">
+            </el-table-column>
             <el-table-column fixed="left">
-              <template slot-scope="scope">
+              <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                 <el-button
-                  @click.native.prevent="deleteRow(scope.$index, teaVariety,scope.row)"
+                  @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
                   class="el-icon-remove"
                   size="small">
                 </el-button>
               </template>
             </el-table-column>
             <el-table-column
+              width="120px"
               prop="id"
               label="编号"
               fixed>
+              <template slot-scope="scope">
+                <span v-if="!infoEdit">
+                  {{scope.row.id}}
+                </span>
+                <el-input v-else v-model="scope.row.id"></el-input>
+              </template>
             </el-table-column>
             <el-table-column
+              width="120px"
               v-for="item in colConfigs"
               :key="item.label"
               :prop="item.label"
               :label="item.name">
+              <template slot-scope="scope">
+                <span v-if="!infoEdit">
+                  {{scope.row[item.label]}}
+                </span>
+                <el-input v-else v-model="scope.row[item.label]"></el-input>
+              </template>
             </el-table-column>
-
           </el-table>
-          <div class="addBtnDiv">
-            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
-              <img src="../../assets/icon/add.png">
-            </el-button>
-          </div>
-          <p class="pagination">
-            <!--<el-pagination-->
-              <!--@size-change="handleSizeChange"-->
-              <!--@current-change="handleCurrentChange"-->
-              <!--:current-page="currentPage4"-->
-              <!--:page-sizes="[10, 20, 30, 40]"-->
-              <!--:page-size="100"-->
-              <!--layout="total, sizes, prev, pager, next, jumper"-->
-              <!--:total="400">-->
-            <!--</el-pagination>-->
+          <p class="pagination" v-if="!ifExport">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
         </div>
       </div>
@@ -76,10 +90,7 @@
         <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
       </el-dialog>
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -101,7 +112,16 @@
         {label:'taste',name:'滋味'},{label:'note',name:'备注'}]
       return{
         teaVariety:[],
+        dataBase:[],
         dialogVisible:false,
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
+        ifExport:false,
+        infoEdit:false,
+        multipleSelection:[],
+        selectedId:[],
+        search:'',
       }
     },
     created() {
@@ -109,7 +129,9 @@
         url:'/database/germplasmResources',
         method:'get'
       }).then(response=>{
+        this.dataBase=response.data;
         this.teaVariety=response.data;
+        this.totalRow=this.dataBase.length;
       })
         .catch(error=>console.log(error));
     },
@@ -130,6 +152,9 @@
                 message: '删除成功'
               });
               rows.splice(index, 1);
+              this.teaVariety.splice(index,1);
+              this.dataBase.splice(index,1);
+              this.totalRow--;
             }).catch(error=>console.log(error));
           })
           .catch(action => {
@@ -146,7 +171,75 @@
       },
       openSingleImport(){
         this.$router.push({path:'/SingleImport',query:{name:'variety'}})
-      }
+      },
+      getSelectedId(){
+        for(var value of this.multipleSelection){
+          this.selectedId.push(value.id);
+        }
+      },
+      exportSelection(){
+        this.getSelectedId();
+        if(this.ifExport){
+          this.$axios({
+            method:'post',
+            url:'/germplasmResources/excelDownloads',
+            data:{
+              id:this.selectedId
+            },
+            responseType: 'blob'
+          }).then(res=>{
+            if(res.status===200){
+              this.downloadExcel(res.data);
+              this.$message({
+                type: 'success',
+                message: '导出成功'
+              });
+            }else{
+              this.$message.error('导出失败');
+            }
+          }).catch(error=>{
+            this.$message.error('导出失败');
+            console.log(error);
+          });
+          this.ifExport=!this.ifExport;
+        }else{
+          this.ifExport=!this.ifExport;
+        }
+      },
+      downloadExcel(data) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]))
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', 'germplasmResources.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      },
+      changeFun(val) {
+        this.multipleSelection=[];
+        this.multipleSelection = val;
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
+      backOrigin(){
+        this.ifExport=false;
+        this.infoEdit=false;
+      },
+      editTable(){
+        this.infoEdit=true;
+      },
+      searchInfo(){
+        var search=this.search;
+        if(search){
+          this.teaVariety=this.dataBase.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+        }else{
+          this.teaVariety=this.dataBase;
+        }
+      },
     }
 
   }

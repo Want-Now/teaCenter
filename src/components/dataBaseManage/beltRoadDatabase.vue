@@ -15,24 +15,31 @@
 
         <div class="tableDiv">
           <p class="searchBar">
-            <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal btn-search">筛选</el-button>
-            <el-button class="btn-normal btn-output">导出</el-button>
-            <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
+            <!--<img src="../../assets/icon/search.png">-->
+            <!--<el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>-->
+            <!--<el-button class="btn-normal btn-search" @click="searchInfo">筛选</el-button>-->
+            <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
+            <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-tabs v-model="activeCard" @tab-click="handleClick">
             <el-tab-pane label="贸易信息" name="tradeInfo">
               <!--贸易信息-->
               <el-table
                 stripe
-                :data="tradeInfoData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?tradeInfoData:tradeInfoData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
                 <el-table-column
-                  width="80px"
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
+                <el-table-column
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, tradeInfoData,scope.row)"
                       class="el-icon-remove"
@@ -45,6 +52,12 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
@@ -52,12 +65,18 @@
               <!--国别基本信息与消费-->
               <el-table
                 stripe
-                :data="countryData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?countryData:countryData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, countryData,scope.row)"
                       class="el-icon-remove"
@@ -70,6 +89,12 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
@@ -77,12 +102,18 @@
               <!--茶叶产值-->
               <el-table
                 stripe
-                :data="productionData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?productionData:productionData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, productionData,scope.row)"
                       class="el-icon-remove"
@@ -95,26 +126,24 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
-
             </el-tab-pane>
           </el-tabs>
-          <div class="addBtnDiv">
-            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
-              <img src="../../assets/icon/add.png">
-            </el-button>
-          </div>
-          <p class="pagination">
-            <!--<el-pagination-->
-            <!--@size-change="handleSizeChange"-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--:current-page="currentPage4"-->
-            <!--:page-sizes="[10, 20, 30, 40]"-->
-            <!--:page-size="100"-->
-            <!--layout="total, sizes, prev, pager, next, jumper"-->
-            <!--:total="400">-->
-            <!--</el-pagination>-->
+          <p class="pagination" v-if="!ifExport">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
           <el-dialog
             title="新增"
@@ -126,14 +155,9 @@
             <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
           </el-dialog>
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -171,9 +195,18 @@
         tradeInfoData:[],
         productionData:[],
         countryData:[],
+        tradeInfoDataCopy:[],
+        productionDataCopy:[],
+        countryDataCopy:[],
         dialogVisible:false,
-
-
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
+        ifExport:false,
+        infoEdit:false,
+        multipleSelection:[],
+        selectedId:[],
+        search:'',
       }
     },
     created(){
@@ -182,8 +215,22 @@
       this.getProduction();
     },
     methods:{
-      handleClick(tab, event) {
-        console.log(tab, event);
+      handleClick() {
+        switch (this.activeCard) {
+          case 'tradeInfo':{
+            this.totalRow=this.tradeInfoData.length;
+            break;
+          }
+          case 'consume':{
+            this.totalRow=this.countryData.length;
+            break;
+          }
+          case 'teaProduce':{
+            this.totalRow=this.productionData.length;
+            break;
+          }
+        }
+        this.multipleSelection=[];
       },
       deleteRow(index,rows,row){
         this.$confirm('是否删除数据？', '确认信息', {
@@ -203,6 +250,9 @@
                     message: '删除成功'
                   });
                   rows.splice(index, 1);
+                  this.tradeInfoData.splice(index,1);
+                  this.tradeInfoDataCopy.splice(index,1);
+                  this.totalRow--;
                 }).catch(error=>console.log(error));
                 break;
               }
@@ -216,6 +266,9 @@
                     message: '删除成功'
                   });
                   rows.splice(index, 1);
+                  this.countryData.splice(index,1);
+                  this.countryDataCopy.splice(index,1);
+                  this.totalRow--;
                 }).catch(error=>console.log(error));
                 break;
               }
@@ -229,6 +282,9 @@
                     message: '删除成功'
                   });
                   rows.splice(index, 1);
+                  this.productionData.splice(index,1);
+                  this.productionDataCopy.splice(index,1);
+                  this.totalRow--;
                 }).catch(error=>console.log(error));
                 break;
               }
@@ -249,6 +305,8 @@
           method:'get'
         }).then(response=>{
           this.tradeInfoData=response.data;
+          this.tradeInfoDataCopy=response.data;
+          this.totalRow=this.tradeInfoData.length;
         }).catch(error=>console.log(error));
       },
       getCountryInfo(){
@@ -257,6 +315,7 @@
           method:'get'
         }).then(response=>{
           this.countryData=response.data;
+          this.countryDataCopy=response.data;
         }).catch(error=>console.log(error));
       },
       getProduction(){
@@ -265,7 +324,52 @@
           method:'get'
         }).then(response=>{
           this.productionData=response.data;
+          this.productionDataCopy=response.data;
         }).catch(error=>console.log(error));
+      },
+      exportSelection(){
+        var dbUrl='';
+        switch (this.activeCard) {
+          case 'tradeInfo':{
+            dbUrl='tradeInfo';
+            break;
+          }
+          case 'consume':{
+            dbUrl='countryInfo';
+            break;
+          }
+          case 'teaProduce':{
+            dbUrl='production';
+            break;
+          }
+        }
+        this.getSelectedId();
+        if(this.ifExport){
+          this.$axios({
+            method:'post',
+            url:'/'+dbUrl+'/excelDownloads',
+            data:{
+              id:this.selectedId
+            },
+            responseType: 'blob'
+          }).then(res=>{
+            if(res.status===200){
+              this.downloadExcel(res.data,dbUrl);
+              this.$message({
+                type: 'success',
+                message: '导出成功'
+              });
+            }else{
+              this.$message.error('导出失败');
+            }
+          }).catch(error=>{
+            this.$message.error('导出失败');
+            console.log(error);
+          });
+          this.ifExport=!this.ifExport;
+        }else{
+          this.ifExport=!this.ifExport;
+        }
       },
       openMultiImport(){
         switch (this.activeCard) {
@@ -298,7 +402,75 @@
             break;
           }
         }
-      }
+      },
+      getSelectedId(){
+        for(var value of this.multipleSelection){
+          this.selectedId.push(value.id);
+        }
+      },
+      downloadExcel(data,name) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]))
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', name+'.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      },
+      changeFun(val) {
+        this.multipleSelection=[];
+        this.multipleSelection = val;
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
+      backOrigin(){
+        this.ifExport=false;
+        this.infoEdit=false;
+      },
+      editTable(){
+        this.infoEdit=true;
+      },
+      uploadEdit(){
+
+      },
+      // searchInfo(){
+      //   var search=this.search;
+      //   if(search){
+      //     switch (this.activeCard) {
+      //       case 'tradeInfo':{
+      //         this.tradeInfoData=this.tradeInfoDataCopy.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+      //         break;
+      //       }
+      //       case 'consume':{
+      //         this.countryData=this.countryDataCopy.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+      //         break;
+      //       }
+      //       case 'teaProduce':{
+      //         this.productionData=this.productionDataCopy.filter(data => !search || data.teaSpecies.toLowerCase().includes(search.toLowerCase()));
+      //         break;
+      //       }
+      //     }
+      //   }else{
+      //     switch (this.activeCard) {
+      //       case 'tradeInfo':{
+      //         this.tradeInfoData=this.tradeInfoDataCopy;
+      //         break;
+      //       }
+      //       case 'consume':{
+      //         this.countryData=this.countryDataCopy;
+      //         break;
+      //       }
+      //       case 'teaProduce':{
+      //         this.productionData=this.productionDataCopy;
+      //         break;
+      //       }
+      //     }
+      //   }
+      // },
     }
   }
 </script>
@@ -316,6 +488,7 @@
   }
   .btn-output{
     float: right;
+    margin: 0 5px;
   }
   .btn-search{
     margin-left: 5%;

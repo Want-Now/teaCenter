@@ -14,12 +14,12 @@
         <div class="tableDiv">
           <p class="searchBar">
             <img src="../../assets/icon/search.png">
-            <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
-            <el-button class="btn-normal">筛选</el-button>
+            <el-input v-model="search" type="text" placeholder="输入关键字" class="sortInput"></el-input>
+            <el-button class="btn-normal" @click="searchInfo">筛选</el-button>
           </p>
           <el-table
             stripe
-            :data="authorManage"
+            :data="authorManage.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
               type="index">
@@ -35,7 +35,7 @@
               label="角色"
               sortable>
               <template slot-scope="scope">
-                <a class="aLabel" @click="goRoleManage(scope.row)">{{scope.row.description}}</a>
+                <a class="aLabel">{{scope.row.description}}</a>
               </template>
             </el-table-column>
             <el-table-column
@@ -51,26 +51,18 @@
             </el-table-column>
           </el-table>
           <p class="pagination">
-            <!--<el-pagination-->
-              <!--@size-change="handleSizeChange"-->
-              <!--@current-change="handleCurrentChange"-->
-              <!--:current-page="currentPage4"-->
-              <!--:page-sizes="[10, 20, 30, 40]"-->
-              <!--:page-size="100"-->
-              <!--layout="total, sizes, prev, pager, next, jumper"-->
-              <!--:total="400">-->
-            <!--</el-pagination>-->
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -82,7 +74,11 @@
     data(){
       return{
         authorManage:[],
-
+        authorManageCopy:[],
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
+        search:'',
       }
     },
     created(){
@@ -90,20 +86,32 @@
     },
     methods:{
       getUserRole(){
-        let that=this;
         this.$axios({
           method:'get',
           url:'/user/role'
         }).then(response=>{
-          that.authorManage=response.data;
+          this.authorManage=response.data;
+          this.authorManageCopy=response.data;
+          this.totalRow=this.authorManage.length;
         }).catch(error=>console.log(error));
       },
       handleEdit(row){
         this.$router.push({path:'/PersonAuthority',query:{username:row.username,role:row.description,roleId:row.role_id}});
       },
-      goRoleManage(row){
-        this.$router.push({path:'/RoleManage',query:{roleDiscription:row.description}});
-      }
+      // goRoleManage(row){
+      //   this.$router.push({path:'/RoleManage',query:{roleDiscription:row.description}});
+      // },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
+      searchInfo(){
+        var search=this.search;
+        if(search){
+          this.authorManage=this.authorManageCopy.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase())||data.description.toLowerCase().includes(search.toLowerCase()));
+        }else{
+          this.authorManage=this.authorManageCopy;
+        }
+      },
     }
   }
 </script>

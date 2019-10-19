@@ -22,7 +22,7 @@
           </p>
           <el-table
             stripe
-            :data="displayData"
+            :data="displayData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
               prop="id"
@@ -47,7 +47,6 @@
                 <el-button class="btn-normal" @click="checkInfo(scope.row)">查看</el-button>
                 <el-button class="btn-normal" @click="freezeUser(scope.row)">冻结</el-button>
                 <el-button class="btn-normal" @click="resetUser(scope.row)">重置</el-button>
-                <!--@click="handleEdit(scope.$index, scope.row)"-->
               </template>
             </el-table-column>
           </el-table>
@@ -79,15 +78,13 @@
             </span>
           </el-dialog>
           <p class="pagination">
-            <!--<el-pagination-->
-              <!--@size-change="handleSizeChange"-->
-              <!--@current-change="handleCurrentChange"-->
-              <!--:current-page="currentPage4"-->
-              <!--:page-sizes="[10, 20, 30, 40]"-->
-              <!--:page-size="100"-->
-              <!--layout="total, sizes, prev, pager, next, jumper"-->
-              <!--:total="400">-->
-            <!--</el-pagination>-->
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
 
         </div>
@@ -140,7 +137,10 @@
           ]
         },
         search:'',
-        displayData:[]
+        displayData:[],
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
       }
     },
     created(){
@@ -150,7 +150,10 @@
       searchInfo(){
         var search=this.search;
         if(search){
-          this.displayData=this.authorManage.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase()));
+          this.displayData=this.authorManage.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase())||data.role.toLowerCase().includes(search.toLowerCase()));
+        }
+        else{
+          this.displayData=this.authorManage;
         }
       },
       getUserRole(){
@@ -162,7 +165,8 @@
           }
         }).then(response=>{
           this.authorManage=response.data;
-          this.displayData=this.authorManage;
+          this.displayData=response.data;
+          this.totalRow=this.authorManage.length;
         }).catch(error=>console.log(error));
       },
       addUser(){

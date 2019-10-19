@@ -18,20 +18,28 @@
             <img src="../../assets/icon/search.png">
             <el-input type="text" placeholder="输入关键字" class="sortInput"></el-input>
             <el-button class="btn-normal btn-search">筛选</el-button>
-            <el-button class="btn-normal btn-output">导出</el-button>
-            <el-button class="btn-normal btn-output">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
+            <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-tabs v-model="activeCard" @tab-click="handleClick">
             <el-tab-pane label="95后现制奶茶消费数据库-基本信息" name="basicInfo">
               <el-table
                 stripe
-                :data="basicInfoData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?basicInfoData:basicInfoData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, basicInfoData,scope.row)"
                       class="el-icon-remove"
@@ -44,18 +52,30 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="95后现制奶茶消费数据库-因素关注程度" name="factor">
               <el-table
                 stripe
-                :data="factorData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?factorData:factorData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, factorData,scope.row)"
                       class="el-icon-remove"
@@ -68,6 +88,12 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
@@ -75,12 +101,18 @@
               <!--茶叶产值-->
               <el-table
                 stripe
-                :data="featureData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?featureData:featureData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, featureData,scope.row)"
                       class="el-icon-remove"
@@ -93,6 +125,12 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
@@ -100,12 +138,18 @@
               <!--茶叶产值-->
               <el-table
                 stripe
-                :data="habitsData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?habitsData:habitsData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, habitsData,scope.row)"
                       class="el-icon-remove"
@@ -118,6 +162,12 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
@@ -125,12 +175,18 @@
               <!--茶叶产值-->
               <el-table
                 stripe
-                :data="recognitionData"
-                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
+                :data="ifExport?recognitionData:recognitionData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}"
+                @selection-change="changeFun">
+                <el-table-column
+                  v-if="ifExport"
+                  type="selection"
+                  width="55">
+                </el-table-column>
                 <el-table-column
                   width="80px"
                   fixed="left">
-                  <template slot-scope="scope">
+                  <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
                     <el-button
                       @click.native.prevent="deleteRow(scope.$index, recognitionData,scope.row)"
                       class="el-icon-remove"
@@ -143,25 +199,24 @@
                   :key="item.name"
                   :prop="item.name"
                   :label="item.label">
+                  <template slot-scope="scope">
+                    <span v-if="!infoEdit">
+                      {{scope.row[item.name]}}
+                    </span>
+                    <el-input v-else v-model="scope.row[item.name]"></el-input>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-tab-pane>
           </el-tabs>
-          <div class="addBtnDiv">
-            <el-button class="addBtn" @click="dialogVisible=!dialogVisible">
-              <img src="../../assets/icon/add.png">
-            </el-button>
-          </div>
-          <p class="pagination">
-            <!--<el-pagination-->
-            <!--@size-change="handleSizeChange"-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--:current-page="currentPage4"-->
-            <!--:page-sizes="[10, 20, 30, 40]"-->
-            <!--:page-size="100"-->
-            <!--layout="total, sizes, prev, pager, next, jumper"-->
-            <!--:total="400">-->
-            <!--</el-pagination>-->
+          <p class="pagination" v-if="!ifExport">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="totalRow">
+            </el-pagination>
           </p>
         </div>
       </div>
@@ -175,10 +230,7 @@
         <el-button class="btn-normal" @click="openMultiImport()">批量导入</el-button>
       </el-dialog>
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -228,13 +280,23 @@
       return{
         activeCard:'basicInfo',
         basicInfoData:[],
+        basicInfoDataCopy:[],
         factorData:[],
+        factorDataCopy:[],
         featureData:[],
+        featureDataCopy:[],
         habitsData:[],
+        habitsDataCopy:[],
         recognitionData:[],
+        recognitionDataCopy:[],
         dialogVisible:false,
-
-
+        totalRow:0,
+        currentPage:1,
+        pageSize:8,
+        ifExport:false,
+        infoEdit:false,
+        multipleSelection:[],
+        selectedId:[],
       }
     },
     created(){
@@ -245,6 +307,31 @@
       this.getRecognition();
     },
     methods:{
+      handleClick() {
+        switch (this.activeCard) {
+          case 'basicInfo':{
+            this.totalRow=this.basicInfoData.length;
+            break;
+          }
+          case 'factor':{
+            this.totalRow=this.factorData.length;
+            break;
+          }
+          case 'feature':{
+            this.totalRow=this.featureData.length;
+            break;
+          }
+          case 'habits':{
+            this.totalRow=this.habitsData.length;
+            break;
+          }
+          case 'recognition':{
+            this.totalRow=this.recognitionData.length;
+            break;
+          }
+        }
+        this.multipleSelection=[];
+      },
       openSingleImport(){
         var dbName='';
         switch (this.activeCard) {
@@ -271,133 +358,6 @@
         }
         this.$router.push({path:'/SingleImport',query:{name:dbName}});
       },
-      handleClick(tab, event) {
-        console.log(tab, event);
-      },
-      getBasicInfo(){
-        this.$axios({
-          url:'/database/basicInfo',
-          method:'get'
-        }).then(response=>{
-          this.basicInfoData=response.data;
-        }).catch(error=>console.log(error));
-      },
-      getFactorData(){
-        this.$axios({
-          url:'/database/factor',
-          method:'get'
-        }).then(response=>{
-          this.factorData=response.data;
-        }).catch(error=>console.log(error));
-      },
-      getFeatureData(){
-        this.$axios({
-          url:'/database/feature',
-          method:'get'
-        }).then(response=>{
-          this.featureData=response.data;
-        }).catch(error=>console.log(error));
-      },
-      getHabitsData(){
-        this.$axios({
-          url:'/database/habits',
-          method:'get'
-        }).then(response=>{
-          this.habitsData=response.data;
-        }).catch(error=>console.log(error));
-      },
-      getRecognition(){
-        this.$axios({
-          url:'/database/recognition',
-          method:'get'
-        }).then(response=>{
-          this.recognitionData=response.data;
-        }).catch(error=>console.log(error));
-      },
-      deleteRow(index,rows,row){
-        this.$confirm('是否删除数据？', '确认信息', {
-          distinguishCancelAndClose: true,
-          confirmButtonText: '删除数据',
-          cancelButtonText: '放弃删除'
-        })
-          .then(() => {
-            switch (this.activeCard) {
-              case 'basicInfo':{
-                this.$axios({
-                  url:'/database/basicInfo/'+row.id,
-                  method: 'delete'
-                }).then(()=>{
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                  });
-                  rows.splice(index, 1);
-                }).catch(error=>console.log(error));
-                break;
-              }
-              case 'factor':{
-                this.$axios({
-                  url:'/database/factor/'+row.id,
-                  method: 'delete'
-                }).then(()=>{
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                  });
-                  rows.splice(index, 1);
-                }).catch(error=>console.log(error));
-                break;
-              }
-              case 'feature':{
-                this.$axios({
-                  url:'/database/feature/'+row.id,
-                  method: 'delete'
-                }).then(()=>{
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                  });
-                  rows.splice(index, 1);
-                }).catch(error=>console.log(error));
-                break;
-              }
-              case 'habits':{
-                this.$axios({
-                  url:'/database/habits/'+row.id,
-                  method: 'delete'
-                }).then(()=>{
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                  });
-                  rows.splice(index, 1);
-                }).catch(error=>console.log(error));
-                break;
-              }
-              case 'recognition':{
-                this.$axios({
-                  url:'/database/recognition/'+row.id,
-                  method: 'delete'
-                }).then(()=>{
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                  });
-                  rows.splice(index, 1);
-                }).catch(error=>console.log(error));
-                break;
-              }
-            }
-          })
-          .catch(action => {
-            this.$message({
-              type: 'info',
-              message: action === 'cancel'
-                ? '放弃删除'
-                : '停留在当前页面'
-            })
-          });
-      },
       openMultiImport(){
         switch (this.activeCard) {
           case 'basicInfo':{
@@ -421,6 +381,237 @@
             break;
           }
         }
+      },
+      deleteRow(index,rows,row){
+        this.$confirm('是否删除数据？', '确认信息', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '删除数据',
+          cancelButtonText: '放弃删除'
+        })
+          .then(() => {
+            switch (this.activeCard) {
+              case 'basicInfo':{
+                this.$axios({
+                  url:'/database/basicInfo/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                  this.basicInfoData.splice(index,1);
+                  this.basicInfoDataCopy.splice(index,1);
+                  this.totalRow--;
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'factor':{
+                this.$axios({
+                  url:'/database/factor/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                  this.factorData.splice(index,1);
+                  this.factorDataCopy.splice(index,1);
+                  this.totalRow--;
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'feature':{
+                this.$axios({
+                  url:'/database/feature/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                  this.featureData.splice(index,1);
+                  this.featureDataCopy.splice(index,1);
+                  this.totalRow--;
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'habits':{
+                this.$axios({
+                  url:'/database/habits/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                  this.habitsData.splice(index,1);
+                  this.habitsDataCopy.splice(index,1);
+                  this.totalRow--;
+                }).catch(error=>console.log(error));
+                break;
+              }
+              case 'recognition':{
+                this.$axios({
+                  url:'/database/recognition/'+row.id,
+                  method: 'delete'
+                }).then(()=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                  });
+                  rows.splice(index, 1);
+                  this.recognitionData.splice(index,1);
+                  this.recognitionDataCopy.splice(index,1);
+                  this.totalRow--;
+                }).catch(error=>console.log(error));
+                break;
+              }
+            }
+          })
+          .catch(action => {
+            this.$message({
+              type: 'info',
+              message: action === 'cancel'
+                ? '放弃删除'
+                : '停留在当前页面'
+            })
+          });
+      },
+      getBasicInfo(){
+        this.$axios({
+          url:'/database/basicInfo',
+          method:'get'
+        }).then(response=>{
+          this.basicInfoData=response.data;
+          this.basicInfoDataCopy=response.data;
+          this.totalRow=this.basicInfoData.length;
+        }).catch(error=>console.log(error));
+      },
+      getFactorData(){
+        this.$axios({
+          url:'/database/factor',
+          method:'get'
+        }).then(response=>{
+          this.factorData=response.data;
+          this.factorDataCopy=response.data;
+        }).catch(error=>console.log(error));
+      },
+      getFeatureData(){
+        this.$axios({
+          url:'/database/feature',
+          method:'get'
+        }).then(response=>{
+          this.featureData=response.data;
+          this.featureDataCopy=response.data;
+        }).catch(error=>console.log(error));
+      },
+      getHabitsData(){
+        this.$axios({
+          url:'/database/habits',
+          method:'get'
+        }).then(response=>{
+          this.habitsData=response.data;
+          this.habitsDataCopy=response.data;
+        }).catch(error=>console.log(error));
+      },
+      getRecognition(){
+        this.$axios({
+          url:'/database/recognition',
+          method:'get'
+        }).then(response=>{
+          this.recognitionData=response.data;
+          this.recognitionDataCopy=response.data;
+        }).catch(error=>console.log(error));
+      },
+      exportSelection(){
+        var dbUrl='';
+        switch (this.activeCard) {
+          case 'basicInfo':{
+            dbUrl='basicInfo';
+            break;
+          }
+          case 'factor':{
+            dbUrl='factor';
+            break;
+          }
+          case 'feature':{
+            dbUrl='feature';
+            break;
+          }
+          case 'habits':{
+            dbUrl='habits';
+            break;
+          }
+          case 'recognition':{
+            dbUrl='recognition';
+            break;
+          }
+        }
+        this.getSelectedId();
+        if(this.ifExport){
+          this.$axios({
+            method:'post',
+            url:'/'+dbUrl+'/excelDownloads',
+            data:{
+              id:this.selectedId
+            },
+            responseType: 'blob'
+          }).then(res=>{
+            if(res.status===200){
+              this.downloadExcel(res.data,dbUrl);
+              this.$message({
+                type: 'success',
+                message: '导出成功'
+              });
+            }else{
+              this.$message.error('导出失败');
+            }
+          }).catch(error=>{
+            this.$message.error('导出失败');
+            console.log(error);
+          });
+          this.ifExport=!this.ifExport;
+        }else{
+          this.ifExport=!this.ifExport;
+        }
+      },
+      getSelectedId(){
+        for(var value of this.multipleSelection){
+          this.selectedId.push(value.id);
+        }
+      },
+      downloadExcel(data,name) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]))
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', name+'.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      },
+      changeFun(val) {
+        this.multipleSelection=[];
+        this.multipleSelection = val;
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
+      backOrigin(){
+        this.ifExport=false;
+        this.infoEdit=false;
+      },
+      editTable(){
+        this.infoEdit=true;
+      },
+      uploadEdit(){
+
       },
     }
   }

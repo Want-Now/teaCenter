@@ -58,18 +58,17 @@
         dataBases:[{name:'乌龙茶品种SNP指纹图谱数据库',authority:[]},{name:'乌龙茶品种资源数据库',authority:[]}, {name:'一带一路贸易数据库',authority:[]},{name:'福建省乌龙茶消费者购买行为数据库',authority:[]}],
         powers:powerOptions,
         powerChose:[],
+        role:'',
       }
     },
     created() {
       this.username=this.$route.query.username;
       this.role=this.$route.query.role;
       this.getAllAthority();
-
     },
     methods:{
       getAllAthority(){
-        let index;
-        for(index=0;index<4;index++)
+        for(let index=0;index<4;index++)
         {
           this.$axios({
             url:'/get_db_permission',
@@ -79,7 +78,9 @@
               db_index:index
             }
           }).then(res=>{
-            this.dataBases[index].authority.push(this.reverseAuthority(res.data.permissions));
+            // this.dataBases[index].authority.push(this.reverseAuthority(res.data.permissions));
+            this.$set(this.dataBases[index],'authority',this.reverseAuthority(res.data.permissions));
+            console.log(this.dataBases);
           }).catch(err=>console.log(err));
         }
       },
@@ -141,7 +142,6 @@
       },
       reverseAuthority(str){
         let outputArray=new Array();
-        console.log(str);
         if(str){
           let arr=str.split(',');
           for(let i=0;i<arr.length;i++)
@@ -168,7 +168,6 @@
           }
         }
         else outputArray=[''];
-        console.log(outputArray);
         return outputArray;
       },
       back(){
