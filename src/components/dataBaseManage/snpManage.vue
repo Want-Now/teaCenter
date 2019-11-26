@@ -20,9 +20,9 @@
             <el-button class="btn-normal btn-search" @click="searchInfo()">筛选</el-button>
             <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
             <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
-            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="exportPer&&!infoEdit">导出</el-button>
             <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="inputPer&&!ifExport&&!infoEdit">新增</el-button>
 
 
           </p>
@@ -146,10 +146,16 @@
         currentPage:1,
         pageSize:8,
         infoEdit:false,
+        exportPer:true,
+        inputPer:true,
       }
     },
     created(){
       this. getSnpMap();
+      if(this.$store.state.permissions['1'].indexOf(2)!=-1) this.inputPer=true;
+      else this.inputPer=false;
+      if(this.$store.state.permissions['1'].indexOf(3)!=-1) this.exportPer=true;
+      else this.exportPer=false;
     },
     methods:{
       getSnpMap(){
@@ -264,7 +270,7 @@
         let link = document.createElement('a')
         link.style.display = 'none'
         link.href = url
-        link.setAttribute('download', 'snpMapExcel.xlsx')
+        link.setAttribute('download', 'snpMapExcel.xls')
         document.body.appendChild(link)
         link.click()
       },

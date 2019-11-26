@@ -129,9 +129,8 @@
               that.$axios.post('/login', formdata, config).then(
                 response => {
                   if (response.status === 200) {
-                    console.log(response.headers);
                     this.$store.commit('SET_AUTH', response.headers);
-                    console.log(this.$store.state.sessionID);
+                    this.getUserID();
                     that.$router.push('/Index');
                   }
                 },
@@ -145,12 +144,30 @@
               that.$refs[ loginForm ].resetFields();
             }
           } else {
-            that.$message.error('有必填项未填哦～');
+            that.$message.error('有必填项未填');
             return false;
           }
         });
       },
-
+      getUserID(){
+        this.$axios({
+          method:'get',
+          url:'/myinformation',
+        }).then(response=>{
+          this.$store.state.id=response.data.user.id;
+          this.$store.state.name=response.data.user.username;
+          this.$store.state.permissions=response.data.permissions;
+          console.log(response.data);
+        }).catch(error=>{console.log(error);});
+      },
+      changeNavBar(show){
+        let {navBar, foldBtnImg} = this.$refs;
+        if(show){
+          this.hideNavBar(navBar,foldBtnImg);
+        } else{
+          this.showNavBar(navBar,foldBtnImg);
+        }
+      },
       forgetPassword() {
         this.forgetDialog = true;
       },

@@ -86,16 +86,10 @@
               :total="totalRow">
             </el-pagination>
           </p>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -242,7 +236,10 @@
           }
         })
           .catch(error=>console.log(error));
-      }
+      },
+      handleCurrentChange(val) {
+        this.currentPage=val;
+      },
     }
 
   }

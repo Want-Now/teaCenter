@@ -20,9 +20,9 @@
             <el-button class="btn-normal btn-search">筛选</el-button>
             <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
             <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
-            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="exportPer&&!infoEdit">导出</el-button>
             <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="inputPer&&!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-table
             stripe
@@ -122,6 +122,8 @@
         multipleSelection:[],
         selectedId:[],
         search:'',
+        exportPer:true,
+        inputPer:true,
       }
     },
     created() {
@@ -134,6 +136,10 @@
         this.totalRow=this.dataBase.length;
       })
         .catch(error=>console.log(error));
+      if(this.$store.state.permissions['2'].indexOf(2)!=-1) this.inputPer=true;
+      else this.inputPer=false;
+      if(this.$store.state.permissions['2'].indexOf(3)!=-1) this.exportPer=true;
+      else this.exportPer=false;
     },
     methods:{
       deleteRow(index,rows,row){
@@ -214,7 +220,7 @@
         let link = document.createElement('a')
         link.style.display = 'none'
         link.href = url
-        link.setAttribute('download', 'germplasmResources.xlsx')
+        link.setAttribute('download', 'germplasmResources.xls')
         document.body.appendChild(link)
         link.click()
       },

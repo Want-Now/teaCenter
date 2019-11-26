@@ -5,8 +5,8 @@ import axios from 'axios'
 
 let httpService = axios.create({
   // url前缀-'https://some-domain.com/api/'
-  baseURL: 'http://localhost:8082',
-  // baseURL: 'http://119.23.189.216:8082',
+  // baseURL: 'http://localhost:8082',
+  baseURL: 'http://119.23.189.216:8082',
   // 请求超时时间
   timeout: 20000,
   withCredentials: true

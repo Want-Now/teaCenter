@@ -15,7 +15,7 @@
         <el-card class="mainCard">
           <p>说明: </p>
           <p>1.点击“下载模板”下载数据表格模板，按要求填写表格后保存文件: </p>
-          <p>2.点击“上传数据”选擇上传填写好的文件,仅可上传xlsx格式的文件; </p>
+          <p>2.点击“上传数据”选擇上传填写好的文件,仅可上传xls格式的文件; </p>
           <p>3.点击“导入”即可导入數据， </p>
 
           <el-button class="btn-normal btn-topmargin" @click="downloadMould">下载模版</el-button>
@@ -195,7 +195,7 @@
         let link = document.createElement('a')
         link.style.display = 'none'
         link.href = url
-        link.setAttribute('download', this.$route.query.databaseName+'ModelExcel.xlsx')
+        link.setAttribute('download', this.$route.query.databaseName+'ModelExcel.xls')
 
         document.body.appendChild(link)
         link.click()

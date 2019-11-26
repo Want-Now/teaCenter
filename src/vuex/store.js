@@ -5,9 +5,9 @@ Vue.use(Vuex)
 
 // 1、state：创建初始化状态
 const state = {
-  // token: window.sessionStorage.getItem('token'),
-  // role: window.sessionStorage.getItem('role'),
-  // id: window.sessionStorage.getItem('id'),
+  role: window.sessionStorage.getItem('name'),
+  id: window.sessionStorage.getItem('id'),
+  permission: window.sessionStorage.getItem('permission'),
   sessionID:window.sessionStorage.getItem('sessionID'),
   screenWidth: document.documentElement.clientWidth,
   screenHeight: document.documentElement.clientHeight,
@@ -20,22 +20,22 @@ const state = {
 const mutations = {
   // 状态变更函数-一般大写
   SET_AUTH(state, payload) {
-    // state.token = payload.token
-    // state.role = payload.role
-    // state.id = payload.id
-    // window.sessionStorage.setItem('token', payload.token)
-    // window.sessionStorage.setItem('role', payload.role)
-    // window.sessionStorage.setItem('id', payload.id)
+    state.permissions = payload.permissions
+    state.name = payload.name
+    state.id = payload.id
+    window.sessionStorage.setItem('token', payload.permissions)
+    window.sessionStorage.setItem('role', payload.name)
+    window.sessionStorage.setItem('id', payload.id)
     state.sessionID = payload.sessionid
     window.sessionStorage.setItem('sessionID', payload.sessionid)
   },
   CLEAR_AUTH(state) {
-    // state.token = undefined
-    // state.role = undefined
-    // state.id = undefined
-    // window.sessionStorage.setItem('token', undefined)
-    // window.sessionStorage.setItem('role', undefined)
-    // window.sessionStorage.setItem('id', undefined)
+    state.permissions = undefined
+    state.name = undefined
+    state.id = undefined
+    window.sessionStorage.setItem('permissions', undefined)
+    window.sessionStorage.setItem('name', undefined)
+    window.sessionStorage.setItem('id', undefined)
     state.sessionID = undefined
     window.sessionStorage.setItem('sessionID', undefined)
   },

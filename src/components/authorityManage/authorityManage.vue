@@ -96,7 +96,7 @@
         }).catch(error=>console.log(error));
       },
       handleEdit(row){
-        this.$router.push({path:'/PersonAuthority',query:{username:row.username,role:row.description,roleId:row.role_id}});
+        this.$router.push({path:'/PersonAuthority',query:{username:row.username,role:row.description,userId:row.id}});
       },
       // goRoleManage(row){
       //   this.$router.push({path:'/RoleManage',query:{roleDiscription:row.description}});

@@ -15,7 +15,7 @@
         <div class="mainDiv">
           <div class="identity">
             <img src="../../assets/icon/personal.png">
-            <span>{{role}}:{{username}}</span>
+            <span>{{username}}</span>
           </div>
           <p class="authorP">
             <span class="selectSpan">详细权限</span>
@@ -47,7 +47,7 @@
 <script>
   import TopBar from "../reuseComponent/topBar"
   import NavBar from "../reuseComponent/navBar"
-  const powerOptions=[{key:0,label:'查看数据'},{key:1,label:'导入数据'},{key:2,label:'导出数据'},{key:3,label:'设置用户组下的用户权限'}];
+  const powerOptions=[{label:'查看数据'},{label:'导入数据'},{label:'导出数据'}];
   export default {
     name: "personAuthority",
     components: {TopBar,NavBar},
@@ -55,120 +55,94 @@
       return{
         username:'',
         fold:true,
-        dataBases:[{name:'乌龙茶品种SNP指纹图谱数据库',authority:[]},{name:'乌龙茶品种资源数据库',authority:[]}, {name:'一带一路贸易数据库',authority:[]},{name:'福建省乌龙茶消费者购买行为数据库',authority:[]}],
+        dataBases:[],
         powers:powerOptions,
         powerChose:[],
-        role:'',
+        userId:'',
+        permissionChanged:{}
       }
     },
     created() {
       this.username=this.$route.query.username;
-      this.role=this.$route.query.role;
+      this.userId=this.$route.query.userId;
       this.getAllAthority();
     },
     methods:{
       getAllAthority(){
-        for(let index=0;index<4;index++)
-        {
-          this.$axios({
-            url:'/get_db_permission',
-            method:'get',
-            params:{
-              role_id:this.$route.query.roleId,
-              db_index:index
-            }
-          }).then(res=>{
-            // this.dataBases[index].authority.push(this.reverseAuthority(res.data.permissions));
-            this.$set(this.dataBases[index],'authority',this.reverseAuthority(res.data.permissions));
-            console.log(this.dataBases);
-          }).catch(err=>console.log(err));
-        }
+        this.$axios({
+          url:'/user/'+this.userId+'/authority',
+          method:'get'
+        }).then(res=>{
+          this.permissionChanged=res.data;
+          if(res.data['1']){
+            this.dataBases.push({name:'乌龙茶品种SNP指纹图谱数据库',authority:this.matchAuthority(res.data['1']),dbId:1});
+          }
+          if(res.data['2']){
+            this.dataBases.push({name:'乌龙茶品种资源数据库',authority:this.matchAuthority(res.data['2']),dbId:2});
+          }
+          if(res.data['3']){
+            this.dataBases.push({name:'一带一路贸易数据库',authority:this.matchAuthority(res.data['3']),dbId:3});
+          }
+          if(res.data['4']){
+            this.dataBases.push({name:'福建省乌龙茶消费者购买行为数据库',authority:this.matchAuthority(res.data['4']),dbId:4});
+          }
+        }).catch(err=>console.log(err));
       },
       savePermission(){
-        var permission='';
-        for(let index=0;index<4;index++)
-        {
-          console.log(this.dataBases[index].authority);
-          permission=this.matchAuthority(this.dataBases[index].authority);
-          this.$axios({
-            url:'/save_db_permission',
-            method:'post',
-            params:{
-              role_id:this.$route.query.roleId,
-              db_index:index,
-              new_permission:permission
-            }
-          }).then(res=>{
-            if(res.data.status===200)
-            {
-              this.$message({
-                type: 'success',
-                message: '修改成功'
-              });
-            }
-            else console.log(res.data.status);
-          }).catch(err=>{
-            console.log(err);
-            alert('请求失败');
-          });
-        }
+        this.reverseAuthority(this.dataBases);
+        this.$axios({
+          url:'/user/'+this.userId+'/authority',
+          method:'put',
+          data:this.permissionChanged
+        }).then(res=>alert('修改成功'))
+          .catch(err=>console.log(err));
       },
       matchAuthority(auth){
-        let permission='';
-        for(let i=0;i<auth.length;i++)
-        {
+        var arr=new Array;
+        for(var i=0;i<auth.length;i++){
           switch (auth[i]) {
-            case'查看数据':{
-              permission+='0,';
+            case 1:{
+              arr.push('查看数据');
               break;
             }
-            case'导入数据':{
-              permission+='1,';
+            case 2:{
+              arr.push('导入数据');
               break;
             }
-            case'导出数据':{
-              permission+='2,';
+            case 3:{
+              arr.push('导出数据');
               break;
             }
-            case'设置用户组下的用户权限':{
-              permission+='3,';
+          }
+        }
+        return arr;
+      },
+      reverseAuthority(obj){
+        for(var per of obj)
+        {
+          this.permissionChanged[per.dbId]=this.changePer(per.authority);
+        }
+      },
+      changePer(arr){
+        var output=new Array();
+        for(var per of arr){
+          switch (per) {
+            case '查看数据':{
+              output.push(1);
+              break;
+            }
+            case '导入数据':{
+              output.push(2);
+              break;
+            }
+            case '导出数据':{
+              output.push(3);
               break;
             }
             default:break;
           }
         }
-        permission=permission.substring(0,permission.length-1);
-        return permission;
-      },
-      reverseAuthority(str){
-        let outputArray=new Array();
-        if(str){
-          let arr=str.split(',');
-          for(let i=0;i<arr.length;i++)
-          {
-            switch (arr[i]) {
-              case '0':{
-                outputArray.push('查看数据');
-                break;
-              }
-              case '1':{
-                outputArray.push('导入数据');
-                break;
-              }
-              case '2':{
-                outputArray.push('导出数据');
-                break;
-              }
-              case '3':{
-                outputArray.push('设置用户组下的用户权限');
-                break;
-              }
-              default:break;
-            }
-          }
-        }
-        else outputArray=[''];
-        return outputArray;
+        return output;
       },
       back(){
         this.$router.go(-1);

@@ -50,15 +50,11 @@
       }
     },
     created(){
-      this.getUserID();
+      this.username=this.$store.state.name;
+      this.userId=this.$store.state.id;
     },
     mounted () {
-      this.isActive = sessionStorage.getItem('isActive');
-    },
-    watch: {
-      userid: function(newVal,oldVal){
-        this.id = newVal;
-      }
+      this.isActive = window.sessionStorage.getItem('isActive');
     },
     methods:{
       navChange(title){
@@ -71,8 +67,7 @@
           case 'operateLog':{this.$router.push('/OperateLog');break;}
         }
         this.isActive=title;
-        sessionStorage.setItem('isActive', this.isActive);
-        console.log(this.isActive);
+        window.sessionStorage.setItem('isActive', this.isActive);
       },
       toPersonCenter(){
         this.$router.push({path:'/PersonCenter',query:{userId:this.userId}});
@@ -91,23 +86,6 @@
             console.log(response);
           }
         }).catch(error=>console.log(error));
-      },
-      getUserID(){
-        this.$axios({
-          method:'get',
-          url:'/myinformation',
-        }).then(response=>{
-          this.userId=response.data.id;
-          this.username=response.data.username;
-        }).catch(error=>{console.log(error);});
-      },
-      changeNavBar(show){
-        let {navBar, foldBtnImg} = this.$refs;
-        if(show){
-          this.hideNavBar(navBar,foldBtnImg);
-        } else{
-          this.showNavBar(navBar,foldBtnImg);
-        }
       },
       showNavBar(navBar,foldBtnImg){
         navBar.style['transform'] = 'translateX(0)';

@@ -20,9 +20,9 @@
             <!--<el-button class="btn-normal btn-search" @click="searchInfo">筛选</el-button>-->
             <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
             <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
-            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="!infoEdit">导出</el-button>
+            <el-button class="btn-normal btn-output" @click="exportSelection" v-if="exportPer&&!infoEdit">导出</el-button>
             <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
-            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="!ifExport&&!infoEdit">新增</el-button>
+            <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="inputPer&&!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-tabs v-model="activeCard" @tab-click="handleClick">
             <el-tab-pane label="贸易信息" name="tradeInfo">
@@ -207,12 +207,18 @@
         multipleSelection:[],
         selectedId:[],
         search:'',
+        exportPer:true,
+        inputPer:true,
       }
     },
     created(){
       this.getTradeInfo();
       this.getCountryInfo();
       this.getProduction();
+      if(this.$store.state.permissions['3'].indexOf(2)!=-1) this.inputPer=true;
+      else this.inputPer=false;
+      if(this.$store.state.permissions['3'].indexOf(3)!=-1) this.exportPer=true;
+      else this.exportPer=false;
     },
     methods:{
       handleClick() {
@@ -416,7 +422,7 @@
         let link = document.createElement('a')
         link.style.display = 'none'
         link.href = url
-        link.setAttribute('download', name+'.xlsx')
+        link.setAttribute('download', name+'.xls')
         document.body.appendChild(link)
         link.click()
       },

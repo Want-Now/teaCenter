@@ -12,9 +12,9 @@
         </p>
 
         <div class="tableDiv">
-          <p class="searchBar">
-            <el-button class="btn-normal btn-output">导出</el-button>
-          </p>
+          <!--<p class="searchBar">-->
+            <!--<el-button class="btn-normal btn-output">导出</el-button>-->
+          <!--</p>-->
           <el-table
             stripe
             :data="dataBase"
@@ -72,13 +72,22 @@
     components: {TopBar,NavBar},
     data(){
       return{
-        dataBase:[
-          {index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2019.06.12 23:54:20',uploader:'叶乃兴',size:''},
-          {index:'2',name:'乌龙茶品种资源数据库',changeDate:'2019.06.12 23:53:12',uploader:'洪永聪',size:''},
-          {index:'3',name:'一带一路贸易数据库',changeDate:'2019.06.12 23:50:33',uploader:'杨超英',size:''},
-          {index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2019.06.12 23:55:41',uploader:'林畅',size:''}
-        ],
-
+        dataBase:[],
+        permissions:{},
+      }
+    },
+    created(){
+      if(this.$store.state.permissions['1']){
+        this.dataBase.push({index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2019.06.12 23:54:20',uploader:'叶乃兴',size:''});
+      }
+      if(this.$store.state.permissions['2']){
+        this.dataBase.push({index:'2',name:'乌龙茶品种资源数据库',changeDate:'2019.06.12 23:53:12',uploader:'洪永聪',size:''});
+      }
+      if(this.$store.state.permissions['3']){
+        this.dataBase.push({index:'3',name:'一带一路贸易数据库',changeDate:'2019.06.12 23:50:33',uploader:'杨超英',size:''});
+      }
+      if(this.$store.state.permissions['4']){
+        this.dataBase.push({index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2019.06.12 23:55:41',uploader:'林畅',size:''});
       }
     },
     methods:{
