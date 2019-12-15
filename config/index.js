@@ -9,11 +9,11 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'static',
-    assetsPublicPath: './',
+    assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        // target: 'http://localhost:8082',
-        target: 'http://119.23.189.216:8082',
+        target: 'http://localhost:8082',
+        // target: 'http://119.23.189.216:8082',
         // 设置你调用的接口域名和端口号 别忘了加http
         changeOrigin: true,
         pathRewrite: {

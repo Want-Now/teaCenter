@@ -27,7 +27,8 @@
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
               width="80px"
-              fixed="left">
+              fixed="left"
+              v-if="inputPer">
               <template slot-scope="scope">
                 <el-button
                   @click.native.prevent="deleteRow(scope.$index, dictionaryInfo,scope.row)"
@@ -50,7 +51,7 @@
               label="字典显示"
               align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.elementName">
+                <el-input v-model="scope.row.elementName" :disabled="!inputPer">
                 </el-input>
               </template>
             </el-table-column>
@@ -69,10 +70,11 @@
               label="编辑时间">
             </el-table-column>
             <el-table-column
-              label="操作">
+              label="操作"
+              v-if="inputPer">
               <template slot-scope="scope">
                 <el-button class="btn-normal" @click="saveEdit(scope.row)">保存修改</el-button>
-              </template>5t
+              </template>
             </el-table-column>
           </el-table>
           <p class="pagination">
@@ -105,11 +107,13 @@
         pageSize:8,
         dictionaryName:'',
         databaseStr:'',
+        inputPer:false
       }
     },
     created(){
       this.databaseName=this.$route.query.databaseName;
       this.dictionaryName=this.$route.query.dictionaryName;
+      this.inputPer=this.$route.query.inputPer;
       this.getDetailInfo();
     },
     methods:{

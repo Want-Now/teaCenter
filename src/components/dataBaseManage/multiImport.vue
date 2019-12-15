@@ -10,7 +10,7 @@
           <img src="../../assets/icon/unfold.png" style="height: 16px">
           <span class="locat-first">数据库管理</span>
           <img src="../../assets/icon/unfold.png" style="height: 12px">
-          <span class="locat-second">{{databaseName}}</span>
+          <span class="locat-second">批量导入{{databaseName}}</span>
         </p>
         <el-card class="mainCard">
           <p>说明: </p>
@@ -33,12 +33,8 @@
             :file-list="fileList">
             <el-button class="btn-normal">上传文件</el-button>
           </el-upload>
-
-
         </el-card>
-
       </div>
-
     </el-main>
   </el-container>
 </template>

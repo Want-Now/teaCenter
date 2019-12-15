@@ -40,10 +40,6 @@
         navName:[
           {title:'首页',name:'index'},
           {title:'数据库管理',name:'databaseManage'},
-          {title:'权限管理',name:'authorityManage'},
-          {title:'用户管理',name:'userManage'},
-          {title:'字典管理',name:'dictionaryManage'},
-          {title:'操作日志',name:'operateLog'},
         ],
         username:'',
         userId:'',
@@ -52,6 +48,28 @@
     created(){
       this.username=this.$store.state.name;
       this.userId=this.$store.state.id;
+      switch (this.$store.state.role) {
+        case 'A':{
+          this.navName.push({title:'权限管理',name:'authorityManage'},
+            {title:'用户管理',name:'userManage'},
+            {title:'字典管理',name:'dictionaryManage'},
+            {title:'操作日志',name:'operateLog'});
+          break;
+        }
+        case 'B':{
+          this.navName.push({title:'权限管理',name:'authorityManage'},
+            {title:'用户管理',name:'userManage'},
+            {title:'字典管理',name:'dictionaryManage'});
+          break;
+        }
+        case 'C':{
+          this.navName.push({title:'字典管理',name:'dictionaryManage'});
+          break;
+        }
+        case 'D':{
+          break;
+        }
+      }
     },
     mounted () {
       this.isActive = window.sessionStorage.getItem('isActive');

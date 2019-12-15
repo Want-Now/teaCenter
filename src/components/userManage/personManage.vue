@@ -8,7 +8,7 @@
       <div class="right">
         <p class="location">
           <img src="../../assets/icon/unfold.png" style="height: 16px">
-          <span class="locat-first">权限管理</span>
+          <span class="locat-first">用户管理</span>
           <img src="../../assets/icon/unfold.png" style="height: 12px">
           <span class="locat-second">{{user.username}}</span>
         </p>
@@ -21,7 +21,7 @@
           <p>
             <span class="selectSpan">权限级别：{{user.level}}</span>
             <span class="selectSpan">角色：{{user.role}}</span>
-            <el-button class="btn-normal">权限管理</el-button>
+            <el-button class="btn-normal" @click="goAuthority(user)">权限管理</el-button>
           </p>
           <div class="infoDiv">
             <p>工作单位：{{user.workplace}}</p>
@@ -29,7 +29,7 @@
             <p>用户名：{{user.username}}</p>
             <p>密码：</p>
             <p>邮箱：{{user.email}}</p>
-            <p>个人说明：{{user.datail}}</p>
+            <p>个人说明：{{user.detail}}</p>
           </div>
           <p class="btnP">
             <el-button class="btn-normal" @click="logoutUser">注销</el-button>
@@ -139,6 +139,9 @@
           }
         })
           .catch(error=>console.log(error));
+      },
+      goAuthority(user){
+        this.$router.push({path:'/PersonAuthority',query:{username:user.username,role:user.detail,userId:user.id}});
       }
     }
 

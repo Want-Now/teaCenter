@@ -13,14 +13,6 @@
 
         <div class="tableDiv">
           <p class="searchBar">
-            <el-select v-model="logType" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
             <span class="dateSpan">
               <el-date-picker
                 v-model="dateInterval"
@@ -31,29 +23,22 @@
                 value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </span>
-            <el-button class="btn-normal" @click="getInfo()">筛选</el-button>
+            <el-button class="btn-normal" @click="selectInfo()">筛选</el-button>
           </p>
           <el-table
             stripe
             :data="operateLog.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             :header-cell-style="{background:'#494e8f',color:'white',height:'60px'}">
             <el-table-column
-              prop="i"
-              label="编号">
+              prop="id"
+              label="编号"
+              width="80px"
+              align="center">
             </el-table-column>
             <el-table-column
-              prop="username"
-              label="用户"
-              sortable>
-            </el-table-column>
-            <el-table-column
-              prop="date"
-              label="时间"
-              sortable>
-            </el-table-column>
-            <el-table-column
-              prop="description"
-              label="操作">
+              prop="details"
+              label="操作"
+              align="center">
             </el-table-column>
           </el-table>
           <p class="pagination">
@@ -80,31 +65,41 @@
     data(){
       return{
         operateLog:[],
-        options:[{value:1,label:'登录系统'},{value:2,label:'登出系统'},{value:3,label:'查询数据库'},{value:4,label:'导入数据'},
-          {value:5,label:'导出数据'},{value:6,label:'修改权限'},{value:7,label:'修改密码'},{value:8,label:'修改邮箱'}],
-        logType:null,
         dateInterval:'',
         totalRow:0,
         currentPage:1,
         pageSize:8,
       }
     },
+    created(){
+      this.getInfo();
+    },
     methods:{
       getInfo(){
         this.$axios({
-          url:'/get_log',
+          url:'/log',
           method:'get',
+        }).then(res=>{
+          this.operateLog=res.data;
+          this.totalRow=this.operateLog.length;
+        }).catch(error=>{
+          console.log(error);
+        });
+      },
+      selectInfo(){
+        this.$axios({
+          url:'/rangelog',
+          method:'put',
           params:{
-            start_date:this.dateInterval[0],
-            end_date:this.dateInterval[1],
-            logType: this.logType
+            start:this.dateInterval[0],
+            end:this.dateInterval[1]
           }
         }).then(res=>{
           this.operateLog=res.data;
           this.totalRow=this.operateLog.length;
         }).catch(error=>{
           console.log(error);
-          alert("请求错误")});
+        });
       },
       handleCurrentChange(val) {
         this.currentPage=val;

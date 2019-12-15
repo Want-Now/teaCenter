@@ -21,7 +21,7 @@
             <el-button class="btn-normal btn-output" @click="backOrigin"  v-if="infoEdit||ifExport">返回</el-button>
             <el-button class="btn-normal btn-output" @click="uploadEdit" v-if="infoEdit">完成</el-button>
             <el-button class="btn-normal btn-output" @click="exportSelection" v-if="exportPer&&!infoEdit">导出</el-button>
-            <el-button class="btn-normal btn-output" @click="editTable()" v-if="!ifExport&&!infoEdit">编辑</el-button>
+            <el-button class="btn-normal btn-output" @click="editTable()" v-if="inputPer&&!ifExport&&!infoEdit">编辑</el-button>
             <el-button class="btn-normal btn-output" @click="dialogVisible=!dialogVisible" v-if="inputPer&&!ifExport&&!infoEdit">新增</el-button>
           </p>
           <el-table
@@ -35,7 +35,7 @@
               width="55">
             </el-table-column>
             <el-table-column fixed="left">
-              <template v-if="!ifExport&&!infoEdit" slot-scope="scope">
+              <template v-if="inputPer&&!ifExport&&!infoEdit" slot-scope="scope">
                 <el-button
                   @click.native.prevent="deleteRow(scope.$index, dataBase,scope.row)"
                   class="el-icon-remove"
@@ -136,9 +136,9 @@
         this.totalRow=this.dataBase.length;
       })
         .catch(error=>console.log(error));
-      if(this.$store.state.permissions['2'].indexOf(2)!=-1) this.inputPer=true;
+      if(this.$store.state.permissions['2'].indexOf('2')!=-1) this.inputPer=true;
       else this.inputPer=false;
-      if(this.$store.state.permissions['2'].indexOf(3)!=-1) this.exportPer=true;
+      if(this.$store.state.permissions['2'].indexOf('3')!=-1) this.exportPer=true;
       else this.exportPer=false;
     },
     methods:{

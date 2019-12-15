@@ -17,6 +17,18 @@
             <img src="../../assets/icon/personal.png">
             <span>{{username}}</span>
           </div>
+          <div class="roleClass">
+            <span>用户角色：</span>
+            <el-select v-model="role">
+              <el-option
+                v-for="item in roleOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label">
+              </el-option>
+            </el-select>
+            <el-button class="btn-normal btnMargin" @click="saveRole()">修改</el-button>
+          </div>
           <p class="authorP">
             <span class="selectSpan">详细权限</span>
             <i class="btn-icon el-icon-caret-bottom"></i>
@@ -59,7 +71,21 @@
         powers:powerOptions,
         powerChose:[],
         userId:'',
-        permissionChanged:{}
+        permissionChanged:{},
+        role:'',
+        roleOptions:[{
+          value:1,
+          label:'A'
+        },{
+          value:2,
+          label:'B'
+        },{
+          value:3,
+          label:'C'
+        },{
+          value:4,
+          label:'D'
+        },],
       }
     },
     created() {
@@ -70,73 +96,96 @@
     methods:{
       getAllAthority(){
         this.$axios({
-          url:'/user/'+this.userId+'/authority',
+          url:'/authority/'+this.userId,
           method:'get'
         }).then(res=>{
-          this.permissionChanged=res.data;
-          if(res.data['1']){
-            this.dataBases.push({name:'乌龙茶品种SNP指纹图谱数据库',authority:this.matchAuthority(res.data['1']),dbId:1});
-          }
-          if(res.data['2']){
-            this.dataBases.push({name:'乌龙茶品种资源数据库',authority:this.matchAuthority(res.data['2']),dbId:2});
-          }
-          if(res.data['3']){
-            this.dataBases.push({name:'一带一路贸易数据库',authority:this.matchAuthority(res.data['3']),dbId:3});
-          }
-          if(res.data['4']){
-            this.dataBases.push({name:'福建省乌龙茶消费者购买行为数据库',authority:this.matchAuthority(res.data['4']),dbId:4});
-          }
+          this.role=res.data.level;
+          this.permissionChanged=res.data.auth;
+          this.dataBases.push({name:'乌龙茶品种SNP指纹图谱数据库',authority:this.matchAuthority(res.data.auth['1']),dbId:1});
+          this.dataBases.push({name:'乌龙茶品种资源数据库',authority:this.matchAuthority(res.data.auth['2']),dbId:2});
+          this.dataBases.push({name:'一带一路贸易数据库',authority:this.matchAuthority(res.data.auth['3']),dbId:3});
+          this.dataBases.push({name:'福建省乌龙茶消费者购买行为数据库',authority:this.matchAuthority(res.data.auth['4']),dbId:4});
         }).catch(err=>console.log(err));
       },
       savePermission(){
-        this.reverseAuthority(this.dataBases);
+        var authority=this.reverseAuthority(this.dataBases);
         this.$axios({
-          url:'/user/'+this.userId+'/authority',
-          method:'put',
-          data:this.permissionChanged
+          url:'/authority/permission',
+          method:'post',
+          data:{
+            userId:this.userId,
+            username:this.username,
+            level:this.role,
+            auth:authority.auth,
+            databaseIds:authority.databaseIds
+          }
         }).then(res=>alert('修改成功'))
           .catch(err=>console.log(err));
       },
+      saveRole(){
+        console.log(this.role);
+        this.$axios({
+          url:'/authority/'+this.userId+'/role',
+          method:'post',
+          params:{
+            id:this.$store.state.id,
+            roleId:this.role
+          }
+        }).then(res=>{
+          alert("修改成功");
+        }).catch(err=>{
+          alert(err);
+        })
+      },
       matchAuthority(auth){
-        var arr=new Array;
-        for(var i=0;i<auth.length;i++){
-          switch (auth[i]) {
-            case 1:{
-              arr.push('查看数据');
-              break;
-            }
-            case 2:{
-              arr.push('导入数据');
-              break;
-            }
-            case 3:{
-              arr.push('导出数据');
-              break;
+        var arr=new Array();
+        if(auth){
+          for(var i=0;i<auth.length;i++){
+            switch (auth[i]) {
+              case '1':{
+                arr.push('查看数据');
+                break;
+              }
+              case '2':{
+                arr.push('导入数据');
+                break;
+              }
+              case '3':{
+                arr.push('导出数据');
+                break;
+              }
             }
           }
         }
         return arr;
       },
       reverseAuthority(obj){
+        var authority=new Object();
+        authority.databaseIds=[];
         for(var per of obj)
         {
-          this.permissionChanged[per.dbId]=this.changePer(per.authority);
+          if(per.authority.length){
+            authority.databaseIds.push(per.dbId);
+            this.permissionChanged[per.dbId]=this.changePer(per.authority);
+          }
         }
+        authority.auth=this.permissionChanged;
+        return authority;
       },
       changePer(arr){
         var output=new Array();
         for(var per of arr){
           switch (per) {
             case '查看数据':{
-              output.push(1);
+              output.push('1');
               break;
             }
             case '导入数据':{
-              output.push(2);
+              output.push('2');
               break;
             }
             case '导出数据':{
-              output.push(3);
+              output.push('3');
               break;
             }
             default:break;
@@ -188,6 +237,12 @@
   .el-card{
     border-radius: 20px;
   }
+  .roleClass{
+    color: #808080;
+    font-size: 12px;
+    font-weight: bolder;
+    margin-top: 20px;
+  }
   .btn-icon{
     border:none;
     color: #494e8f;
@@ -210,7 +265,7 @@
     text-align: center;
   }
   .btnMargin{
-    width: 100px;
+    width: 90px;
     margin:0px 80px;
   }
 </style>

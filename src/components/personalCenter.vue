@@ -67,10 +67,7 @@
           </el-card>
         </div>
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>

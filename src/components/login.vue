@@ -128,15 +128,20 @@
               };
               that.$axios.post('/login', formdata, config).then(
                 response => {
-                  if (response.status === 200) {
-                    this.$store.commit('SET_AUTH', response.headers);
-                    this.getUserID();
-                    that.$router.push('/Index');
-                  }
+                  var payload=new Object();
+                  var info=response.data.token.split('.');
+                  payload.token=response.data.token;
+                  payload.name=info[1];
+                  payload.id=info[0];
+                  payload.role=info[4].substring(1,2);
+                  that.getUserPermission(payload.id);
+                  that.$store.commit("SET_AUTH",payload);
+                  console.log(that.$store.state);
+                  that.$router.push('/Index');
                 },
               ).catch(
                 error => {
-                  that.$message.error('登录失败！请检查与数据库的连接');
+                  that.$message.error(error.message);
                   console.log(error);
                 });
             } else {
@@ -149,15 +154,15 @@
           }
         });
       },
-      getUserID(){
+      getUserPermission(id){
         this.$axios({
           method:'get',
-          url:'/myinformation',
+          url:'/permission',
+          params:{
+            cid:id
+          }
         }).then(response=>{
-          this.$store.state.id=response.data.user.id;
-          this.$store.state.name=response.data.user.username;
-          this.$store.state.permissions=response.data.permissions;
-          console.log(response.data);
+          this.$store.state.permissions=response.data;
         }).catch(error=>{console.log(error);});
       },
       changeNavBar(show){

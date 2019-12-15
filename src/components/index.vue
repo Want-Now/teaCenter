@@ -3,12 +3,7 @@
         <el-header height="60px">
           <top-bar>
           </top-bar>
-
         </el-header>
-        <!--<el-container>-->
-          <!--<el-aside width="240px">-->
-
-          <!--</el-aside>-->
           <el-main>
             <nav-bar class="left"></nav-bar>
             <div class="right">
@@ -17,7 +12,7 @@
                 <span class="locat-first">首页</span>
               </p>
               <div class="tableDiv">
-                <span class="tableBlock">
+                <span class="tableBlock" v-if="ifShow[0]">
                   <p>SNP指纹图谱数据库</p>
                   <el-table
                     stripe
@@ -37,7 +32,7 @@
                     </el-table-column>
                   </el-table>
                 </span>
-                <span class="tableBlock">
+                <span class="tableBlock" v-if="ifShow[1]">
                   <p>乌龙茶品种资源数据库</p>
                   <el-table
                     stripe
@@ -57,7 +52,7 @@
                     </el-table-column>
                   </el-table>
                 </span>
-                <span class="tableBlock">
+                <span class="tableBlock" v-if="ifShow[2]">
                   <p>一带一路贸易数据库</p>
                   <el-table
                     stripe
@@ -77,7 +72,7 @@
                     </el-table-column>
                   </el-table>
                 </span>
-                <span class="tableBlock">
+                <span class="tableBlock" v-if="ifShow[3]">
                   <p>乌龙茶消费者购买行为数据库</p>
                   <el-table
                     stripe
@@ -98,12 +93,8 @@
                   </el-table>
                 </span>
               </div>
-
             </div>
-
           </el-main>
-        <!--</el-container>-->
-
       </el-container>
 
 </template>
@@ -121,12 +112,24 @@
           snp:[],
           tradeInfo:[],
           consume:[],
-          germplasm:[]
-
+          germplasm:[],
+          ifShow:[false,false,false,false]
         }
       },
       created(){
-          this.getInfo();
+        this.getInfo();
+        if(this.$store.state.permissions['1']){
+          this.ifShow[0]=true;
+        }
+        if(this.$store.state.permissions['2']){
+          this.ifShow[1]=true;
+        }
+        if(this.$store.state.permissions['3']){
+          this.ifShow[2]=true;
+        }
+        if(this.$store.state.permissions['4']){
+          this.ifShow[3]=true;
+        }
       },
       methods:{
           getInfo(){

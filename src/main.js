@@ -8,7 +8,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 import axios from './util/request'
 import store from './vuex/store'
 
-axios.defaults.withCredentials=true
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$axios = axios
@@ -20,13 +19,4 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
-  // created () {
-  //   //this.$axios.defaults.baseURL='http://localhost:8082';
-  //   this.$axios.defaults.baseURL='http://e4agyf.natappfree.cc';
-  //   this.$axios.interceptors.response.use(function (response) {
-  //     return response;
-  //   }, function (error) {
-  //     return Promise.reject(error);
-  //   });
-  // },
 });

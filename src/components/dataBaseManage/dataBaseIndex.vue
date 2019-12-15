@@ -12,9 +12,6 @@
         </p>
 
         <div class="tableDiv">
-          <!--<p class="searchBar">-->
-            <!--<el-button class="btn-normal btn-output">导出</el-button>-->
-          <!--</p>-->
           <el-table
             stripe
             :data="dataBase"
@@ -54,14 +51,9 @@
             </el-table-column>
           </el-table>
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>

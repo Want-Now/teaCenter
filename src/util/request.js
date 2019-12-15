@@ -3,23 +3,24 @@ import store from '@/vuex/store'
 import axios from 'axios'
 
 
-let httpService = axios.create({
+const httpService = axios.create({
+
   // url前缀-'https://some-domain.com/api/'
-  // baseURL: 'http://localhost:8082',
-  baseURL: 'http://119.23.189.216:8082',
+  baseURL: 'http://localhost:8082',
+  // baseURL: 'http://119.23.189.216:8082',
   // 请求超时时间
   timeout: 20000,
-  withCredentials: true
+  withCredentials: false
 })
 
 httpService.interceptors.request.use(
   config => {
     // 根据条件加入token-安全携带
-    if (store.state.sessionID) { // 需自定义
+    if (store.state.token!=undefined) {
+      // 需自定义
       // 让每个请求携带token
-      config.headers['sessionID'] = store.state.sessionID
+      config.headers['Authorization'] = store.state.token
     }
-
     return config
   },
   error => {
@@ -32,21 +33,21 @@ httpService.interceptors.request.use(
 httpService.interceptors.response.use(
   response => {
     // 统一处理状态
-    const res = response;
-    if (response.state>= 400) { // 需自定义
+    const res = response
+    if (res.statuscode >= 400) { // 需自定义
       // 返回异常
       return Promise.reject(new Error({
-        status: response.state,
-        message: response.data.message
+        status: res.data.statuscode,
+        message: res.data.message
       }))
     } else {
-      return response;
+      return response
     }
   },
   // 处理处理
   error => {
     if (error && error.response) {
-      switch (error.response.state) {
+      switch (error.response.status) {
         case 400:
           error.message = '错误请求'
           break

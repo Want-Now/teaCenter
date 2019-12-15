@@ -31,11 +31,11 @@
               sortable>
             </el-table-column>
             <el-table-column
-              prop="description"
+              prop="roleDescription"
               label="角色"
               sortable>
               <template slot-scope="scope">
-                <a class="aLabel">{{scope.row.description}}</a>
+                <a class="aLabel">{{scope.row.roleDescription}}</a>
               </template>
             </el-table-column>
             <el-table-column
@@ -88,7 +88,10 @@
       getUserRole(){
         this.$axios({
           method:'get',
-          url:'/user/role'
+          url:'/authority',
+          params:{
+            id:this.$store.state.id
+          }
         }).then(response=>{
           this.authorManage=response.data;
           this.authorManageCopy=response.data;

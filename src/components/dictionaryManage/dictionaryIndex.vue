@@ -41,7 +41,7 @@
               prop="size"
               label="大小"
               align="center"
-              width="120px">
+              width="80px">
             </el-table-column>
             <el-table-column
               label="操作"
@@ -53,16 +53,10 @@
               </template>
             </el-table-column>
           </el-table>
-
         </div>
-
       </div>
-
     </el-main>
-    <!--</el-container>-->
-
   </el-container>
-
 </template>
 
 <script>
@@ -73,38 +67,51 @@
     components: {TopBar,NavBar},
     data(){
       return{
-        dataBase:[
-          {index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2018.08.01 23:55:41',uploader:'叶乃兴',size:''},
-          {index:'2',name:'乌龙茶品种资源数据库',changeDate:'2018.08.01 23:55:41',uploader:'洪永聪',size:''},
-          {index:'3',name:'一带一路贸易数据库',changeDate:'2018.08.01 23:55:41',uploader:'杨超英',size:''},
-          {index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2018.08.01 23:55:41',uploader:'林畅',size:''}
-        ],
+        dataBase:[],
         username:'',
-
-
       }
     },
     created(){
       this.username=this.$route.query.username;
+      if(this.$store.state.permissions['1']){
+        this.dataBase.push({index:'1',name:'乌龙茶品种SNP指纹图谱数据库',changeDate:'2019.06.12 23:54:20',uploader:'叶乃兴',size:''});
+      }
+      if(this.$store.state.permissions['2']){
+        this.dataBase.push({index:'2',name:'乌龙茶品种资源数据库',changeDate:'2019.06.12 23:53:12',uploader:'洪永聪',size:''});
+      }
+      if(this.$store.state.permissions['3']){
+        this.dataBase.push({index:'3',name:'一带一路贸易数据库',changeDate:'2019.06.12 23:50:33',uploader:'杨超英',size:''});
+      }
+      if(this.$store.state.permissions['4']){
+        this.dataBase.push({index:'4',name:'福建省乌龙茶消费者购买行为数据库',changeDate:'2019.06.12 23:55:41',uploader:'林畅',size:''});
+      }
     },
     methods:{
       handleEdit(row) {
-        console.log(row.index);
+        var inputPer;
         switch (row.index) {
           case '1':{
-            this.$router.push({path:'/DetailDictionary',query:{dbIndex:1}});
+            if(this.$store.state.permissions['1'].indexOf('2')!=-1) inputPer=true;
+            else inputPer=false;
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:1,inputPer:inputPer}});
             break;
           }
           case '2':{
-            this.$router.push({path:'/DetailDictionary',query:{dbIndex:2}});
+            if(this.$store.state.permissions['2'].indexOf('2')!=-1) inputPer=true;
+            else inputPer=false;
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:2,inputPer:inputPer}});
             break;
           }
           case '3':{
-            this.$router.push({path:'/DetailDictionary',query:{dbIndex:3}});
+            if(this.$store.state.permissions['3'].indexOf('2')!=-1) inputPer=true;
+            else inputPer=false;
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:3,inputPer:inputPer}});
             break;
           }
           case '4':{
-            this.$router.push({path:'/DetailDictionary',query:{dbIndex:4}});
+            if(this.$store.state.permissions['4'].indexOf('2')!=-1) inputPer=true;
+            else inputPer=false;
+            this.$router.push({path:'/DetailDictionary',query:{dbIndex:4,inputPer:inputPer}});
             break;
           }
         }

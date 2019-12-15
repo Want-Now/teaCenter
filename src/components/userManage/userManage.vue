@@ -8,7 +8,7 @@
       <div class="right">
         <p class="location">
           <img src="../../assets/icon/unfold.png" style="height: 16px">
-          <span class="locat-first">权限管理</span>
+          <span class="locat-first">用户管理</span>
         </p>
 
         <div class="tableDiv">
@@ -64,6 +64,16 @@
               </el-form-item>
               <el-form-item label="密码" prop="password">
                 <el-input v-model="newUser.password" clearable></el-input>
+              </el-form-item>
+              <el-form-item label="权限" prop="role">
+                <el-select v-model="newUser.role" placeholder="请选择">
+                  <el-option
+                  v-for="item in roleOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="工作地点" prop="workplace">
                 <el-input v-model="newUser.workplace" clearable></el-input>
@@ -123,6 +133,9 @@
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'}
           ],
+          role: [
+            {required: true, message: '请选择权限', trigger: 'blur'}
+          ],
           workplace:[
             {required: true, message: '请输入工作地点', trigger: 'blur'}
           ],
@@ -130,6 +143,19 @@
             { validator: checkEmail, trigger: 'blur' }
           ]
         },
+        roleOptions:[{
+          value:1,
+          label:'A'
+        },{
+          value:2,
+          label:'B'
+        },{
+          value:3,
+          label:'C'
+        },{
+          value:4,
+          label:'D'
+        },],
         search:'',
         displayData:[],
         totalRow:0,
@@ -166,6 +192,7 @@
       addUser(){
         this.$refs['newUser'].validate((valid) => {
           if (valid) {
+            alert(this.newUser.role);
             this.$axios({
               url:'/user/adduser',
               method:'post',
@@ -174,7 +201,8 @@
                 username:this.newUser.username,
                 password:this.newUser.password,
                 detail:this.newUser.detail,
-                workplace:this.newUser.workplace
+                workplace:this.newUser.workplace,
+                role:this.newUser.role
               }
             }).then(response=>{
               if(response.status==200){

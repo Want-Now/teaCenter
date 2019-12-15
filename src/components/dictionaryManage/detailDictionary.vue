@@ -52,7 +52,8 @@
             <el-table-column
               label="操作">
               <template slot-scope="scope">
-                <el-button class="btn-normal" @click="handleEdit(scope.row)">编辑</el-button>
+                <el-button class="btn-normal" @click="handleEdit(scope.row)" v-if="inputPer">编辑</el-button>
+                <el-button class="btn-normal" @click="handleEdit(scope.row)" v-else>查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -85,16 +86,18 @@
           totalRow:0,
           currentPage:1,
           pageSize:8,
-          search:''
+          search:'',
+          inputPer:false
         }
       },
       created(){
           this.getDictionaryInfo();
+          this.inputPer=this.$route.query.inputPer;
       },
       methods:{
         handleEdit(row){
           this.$router.push({path:'/EditDictionary',query:{databaseName:this.databaseName,
-              dictionaryName:row.dictionaryName,dictionaryId:row.dictionaryId}});
+              dictionaryName:row.dictionaryName,dictionaryId:row.dictionaryId,inputPer:this.inputPer}});
         },
         getDictionaryInfo(){
           switch(this.$route.query.dbIndex){

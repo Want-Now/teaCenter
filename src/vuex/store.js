@@ -5,10 +5,11 @@ Vue.use(Vuex)
 
 // 1、state：创建初始化状态
 const state = {
-  role: window.sessionStorage.getItem('name'),
+  token: window.sessionStorage.getItem('token'),
   id: window.sessionStorage.getItem('id'),
-  permission: window.sessionStorage.getItem('permission'),
-  sessionID:window.sessionStorage.getItem('sessionID'),
+  role: window.sessionStorage.getItem('role'),
+  permissions: window.sessionStorage.getItem('permissions'),
+  name:window.sessionStorage.getItem('name'),
   screenWidth: document.documentElement.clientWidth,
   screenHeight: document.documentElement.clientHeight,
   isCollapse: false,
@@ -20,24 +21,29 @@ const state = {
 const mutations = {
   // 状态变更函数-一般大写
   SET_AUTH(state, payload) {
-    state.permissions = payload.permissions
+    var info=new Array(payload.token.split('.'));
+    state.token = payload.token
     state.name = payload.name
     state.id = payload.id
-    window.sessionStorage.setItem('token', payload.permissions)
-    window.sessionStorage.setItem('role', payload.name)
+    state.role=payload.role
+    state.permissions=payload.permissions
+    window.sessionStorage.setItem('token', payload.token)
+    window.sessionStorage.setItem('name', payload.name)
     window.sessionStorage.setItem('id', payload.id)
-    state.sessionID = payload.sessionid
-    window.sessionStorage.setItem('sessionID', payload.sessionid)
+    window.sessionStorage.setItem('role', payload.role)
+    window.sessionStorage.setItem('permissions', payload.permissions)
   },
   CLEAR_AUTH(state) {
+    state.token = undefined
     state.permissions = undefined
     state.name = undefined
     state.id = undefined
+    state.role = undefined
+    window.sessionStorage.setItem('token', undefined)
     window.sessionStorage.setItem('permissions', undefined)
     window.sessionStorage.setItem('name', undefined)
     window.sessionStorage.setItem('id', undefined)
-    state.sessionID = undefined
-    window.sessionStorage.setItem('sessionID', undefined)
+    window.sessionStorage.setItem('role', undefined)
   },
   SET_COLLAPSE(state, payload) {
     state.isCollapse = payload.isCollapse
