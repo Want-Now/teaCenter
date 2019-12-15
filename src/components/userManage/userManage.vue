@@ -35,7 +35,7 @@
               sortable>
             </el-table-column>
             <el-table-column
-              prop="role"
+              prop="roleDescription"
               label="角色"
               sortable>
             </el-table-column>

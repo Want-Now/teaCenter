@@ -133,33 +133,38 @@
       },
       methods:{
           getInfo(){
-            this.$axios({
-              url:'/dictionary/snp',
-              method:'get'
-            }).then(response=>{
-              this.snp=response.data;
-            }).catch(error=>console.log(error));
-
-            this.$axios({
-              url:'/dictionary/germplasm',
-              method:'get'
-            }).then(response=>{
-              this.germplasm=response.data;
-            }).catch(error=>console.log(error));
-
-            this.$axios({
-              url:'/dictionary/tradeinfo',
-              method:'get'
-            }).then(response=>{
-              this.tradeInfo=response.data;
-            }).catch(error=>console.log(error));
-
-            this.$axios({
-              url:'/dictionary/consume',
-              method:'get'
-            }).then(response=>{
-              this.consume=response.data;
-            }).catch(error=>console.log(error));
+            if(this.ifShow[0]){
+              this.$axios({
+                url:'/dictionary/snp',
+                method:'get'
+              }).then(response=>{
+                this.snp=response.data;
+              }).catch(error=>console.log(error));
+            }
+            if(this.ifShow[1]){
+              this.$axios({
+                url:'/dictionary/germplasm',
+                method:'get'
+              }).then(response=>{
+                this.germplasm=response.data;
+              }).catch(error=>console.log(error));
+            }
+            if(this.ifShow[2]){
+              this.$axios({
+                url:'/dictionary/tradeinfo',
+                method:'get'
+              }).then(response=>{
+                this.tradeInfo=response.data;
+              }).catch(error=>console.log(error));
+            }
+            if(this.ifShow[3]){
+              this.$axios({
+                url:'/dictionary/consume',
+                method:'get'
+              }).then(response=>{
+                this.consume=response.data;
+              }).catch(error=>console.log(error));
+            }
           }
       }
 

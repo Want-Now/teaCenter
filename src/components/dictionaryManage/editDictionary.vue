@@ -39,7 +39,9 @@
             </el-table-column>
             <el-table-column
               prop="elementId"
-              label="ID">
+              label="ID"
+              width="100px"
+              align="center">
             </el-table-column>
             <el-table-column
               label="数据字段"
@@ -54,20 +56,6 @@
                 <el-input v-model="scope.row.elementName" :disabled="!inputPer">
                 </el-input>
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="elementSerial"
-              label="排序">
-              <template slot-scope="scope">
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="editor"
-              label="编辑者">
-            </el-table-column>
-            <el-table-column
-              prop="time"
-              label="编辑时间">
             </el-table-column>
             <el-table-column
               label="操作"
@@ -201,10 +189,9 @@
         this.$axios({
           url:'/dictionary/'+this.databaseStr+'/'+this.$route.query.dictionaryId,
           method:'put',
-          params:{
-            element_id: row.elementId,
-            dictionary_code: this.dictionaryName,
-            element_name: row.elementName
+          data:{
+            elementId: row.elementId,
+            elementName: row.elementName
           }
         }).then(res=>console.log(res))
           .catch(err=>console.log(err));

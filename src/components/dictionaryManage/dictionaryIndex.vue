@@ -38,12 +38,6 @@
               align="center">
             </el-table-column>
             <el-table-column
-              prop="size"
-              label="大小"
-              align="center"
-              width="80px">
-            </el-table-column>
-            <el-table-column
               label="操作"
               align="center">
               <template slot-scope="scope">

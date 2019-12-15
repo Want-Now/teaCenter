@@ -114,6 +114,17 @@
         navBar.style['transform'] = 'translateX(-100%)';
         foldBtnImg.style['transform'] = 'rotate(0deg)';
         this.$data.show = false;
+      },
+      logOut() {
+        // this.$axios({
+        //   url:'logout',
+        //   method:'get'
+        // }).then(res=>{
+        //   this.$store.commit("CLEAR_AUTH");
+        //   this.$router.push('/')
+        // }).catch(err=>{
+        //   console.log(err);
+        // })
       }
     }
   }

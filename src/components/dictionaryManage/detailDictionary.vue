@@ -26,7 +26,9 @@
             <el-table-column
               prop="dictionaryId"
               sortable
-              label="ID">
+              label="ID"
+              width="50px"
+              align="center">
             </el-table-column>
             <el-table-column
               prop="dictionaryName"
@@ -35,22 +37,9 @@
               sortable>
             </el-table-column>
             <el-table-column
-              prop="description"
-              label="备注"
-              sortable>
-            </el-table-column>
-            <el-table-column
-              prop="editor"
-              label="编辑者"
-              sortable>
-            </el-table-column>
-            <el-table-column
-              prop="time"
-              label="编辑时间"
-              sortable>
-            </el-table-column>
-            <el-table-column
-              label="操作">
+              label="操作"
+              width="200px"
+              align="center">
               <template slot-scope="scope">
                 <el-button class="btn-normal" @click="handleEdit(scope.row)" v-if="inputPer">编辑</el-button>
                 <el-button class="btn-normal" @click="handleEdit(scope.row)" v-else>查看</el-button>
